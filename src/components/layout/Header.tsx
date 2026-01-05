@@ -2,21 +2,27 @@ import { useAtom } from "jotai";
 import { themeAtom } from "../../stores";
 import type { ThemeMode } from "../../types";
 
+const THEME_CYCLE: Record<ThemeMode, ThemeMode> = {
+  dark: "light",
+  light: "system",
+  system: "dark",
+};
+
+const THEME_ICONS: Record<ThemeMode, string> = {
+  dark: "🌙",
+  light: "☀️",
+  system: "💻",
+};
+
 export const Header = () => {
   const [theme, setTheme] = useAtom(themeAtom);
 
   const cycleTheme = () => {
-    const themes: ReadonlyArray<ThemeMode> = ["dark", "light", "system"];
-    const currentIndex = themes.indexOf(theme);
-    const nextIndex = (currentIndex + 1) % themes.length;
-    setTheme(themes[nextIndex]);
+    const { [theme]: nextTheme } = THEME_CYCLE;
+    setTheme(nextTheme);
   };
 
-  const themeIcon = {
-    dark: "🌙",
-    light: "☀️",
-    system: "💻",
-  }[theme];
+  const { [theme]: themeIcon } = THEME_ICONS;
 
   return (
     <header className="flex h-12 items-center justify-between border-b border-gray-700 bg-gray-800 px-4">

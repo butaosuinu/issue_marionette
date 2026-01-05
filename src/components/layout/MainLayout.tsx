@@ -4,9 +4,9 @@ import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 import { resolvedThemeAtom } from "../../stores";
 
-type Props = {
+interface Props {
   children: ReactNode;
-};
+}
 
 export const MainLayout = ({ children }: Props) => {
   const theme = useAtomValue(resolvedThemeAtom);

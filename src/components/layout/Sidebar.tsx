@@ -1,8 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
-export const Sidebar = () => {
-  return (
-    <aside className="flex w-60 flex-col border-r border-gray-700 bg-gray-800">
+export const Sidebar = () => (
+  <aside className="flex w-60 flex-col border-r border-gray-700 bg-gray-800">
       <div className="flex-1 overflow-y-auto p-2">
         <nav className="space-y-1">
           <Link
@@ -26,6 +25,5 @@ export const Sidebar = () => {
           リポジトリ未選択
         </div>
       </div>
-    </aside>
-  );
-};
+  </aside>
+);
