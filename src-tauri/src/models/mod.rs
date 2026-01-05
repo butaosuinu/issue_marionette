@@ -1,9 +1,9 @@
-pub mod repository;
-pub mod issue;
-pub mod worktree;
 pub mod agent;
+pub mod issue;
+pub mod repository;
+pub mod worktree;
 
-pub use repository::*;
-pub use issue::*;
-pub use worktree::*;
 pub use agent::*;
+pub use issue::*;
+pub use repository::*;
+pub use worktree::*;
