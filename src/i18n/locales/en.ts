@@ -1,0 +1,12 @@
+export const messages = {
+  "app.name": "issue_marionette",
+  "app.description": "Coding Agent Orchestrator using GitHub issues as tasks",
+  "nav.kanban": "Kanban",
+  "nav.settings": "Settings",
+  "settings.title": "Settings",
+  "settings.description": "Application Settings",
+  "repository.notSelected": "No repository selected",
+  "theme.dark": "Dark",
+  "theme.light": "Light",
+  "theme.system": "System",
+};

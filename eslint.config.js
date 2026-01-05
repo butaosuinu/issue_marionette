@@ -5,7 +5,7 @@ import oxlint from 'eslint-plugin-oxlint'
 
 export default [
   {
-    ignores: ['node_modules/', 'dist/', 'src-tauri/', '*.config.*'],
+    ignores: ['node_modules/', 'dist/', 'src-tauri/', '*.config.*', 'src/**/*.gen.ts'],
   },
   {
     ...love,
