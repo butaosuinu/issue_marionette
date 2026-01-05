@@ -89,4 +89,4 @@ jobs:
         run: pnpm install
 
       - name: Test
-        run: pnpm run test:run -- --passWithNoTests
+        run: pnpm exec vitest run --passWithNoTests
