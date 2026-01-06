@@ -10,7 +10,7 @@ static PENDING_STATES: Lazy<Mutex<HashMap<String, chrono::DateTime<Utc>>>> =
 
 #[command]
 pub async fn start_oauth_flow(_app: AppHandle) -> Result<String, String> {
-    let config = OAuthConfig::from_env();
+    let config = OAuthConfig::from_env()?;
     let state = OAuthConfig::generate_state();
 
     {
@@ -50,7 +50,7 @@ pub async fn exchange_oauth_code(
         }
     }
 
-    let config = OAuthConfig::from_env();
+    let config = OAuthConfig::from_env()?;
     let token_response = config.exchange_code(&code).await?;
 
     let stored_auth = StoredAuth {

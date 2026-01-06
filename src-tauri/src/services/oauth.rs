@@ -1,8 +1,8 @@
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
-const GITHUB_CLIENT_ID: &str = env!("GITHUB_CLIENT_ID");
-const GITHUB_CLIENT_SECRET: &str = env!("GITHUB_CLIENT_SECRET");
+const GITHUB_CLIENT_ID: Option<&str> = option_env!("GITHUB_CLIENT_ID");
+const GITHUB_CLIENT_SECRET: Option<&str> = option_env!("GITHUB_CLIENT_SECRET");
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TokenResponse {
@@ -28,12 +28,17 @@ impl OAuthConfig {
         }
     }
 
-    pub fn from_env() -> Self {
-        Self::new(
-            GITHUB_CLIENT_ID.to_string(),
-            GITHUB_CLIENT_SECRET.to_string(),
+    pub fn from_env() -> Result<Self, String> {
+        let client_id = GITHUB_CLIENT_ID
+            .ok_or_else(|| "GITHUB_CLIENT_ID not configured at compile time".to_string())?;
+        let client_secret = GITHUB_CLIENT_SECRET
+            .ok_or_else(|| "GITHUB_CLIENT_SECRET not configured at compile time".to_string())?;
+
+        Ok(Self::new(
+            client_id.to_string(),
+            client_secret.to_string(),
             "issue-marionette://oauth-callback".to_string(),
-        )
+        ))
     }
 
     pub fn generate_state() -> String {
