@@ -4,9 +4,7 @@ import { Provider } from "jotai";
 import { describe, it, expect } from "vitest";
 import { KanbanBoard } from "../KanbanBoard";
 
-const renderWithProvider = (ui: React.ReactElement) => {
-  return render(<Provider>{ui}</Provider>);
-};
+const renderWithProvider = (ui: React.ReactElement) => render(<Provider>{ui}</Provider>);
 
 describe("KanbanBoard", () => {
   it("デフォルトカラムが表示される", () => {

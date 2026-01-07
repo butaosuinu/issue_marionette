@@ -1,11 +1,16 @@
 import { atom } from "jotai";
 import type { Issue } from "../types";
+import { ARRAY_INDEX } from "../constants/kanban";
 import { issuesByColumnAtom } from "./kanbanAtoms";
 import { arrayMove } from "../utils/array";
 
-export const issuesMapAtom = atom<Record<string, Issue>>({});
+export const issuesMapAtom = atom<Partial<Record<string, Issue>>>({});
 
-export const issuesAtom = atom((get) => Object.values(get(issuesMapAtom)));
+export const issuesAtom = atom((get) =>
+  Object.values(get(issuesMapAtom)).filter(
+    (issue): issue is Issue => issue !== undefined
+  )
+);
 
 export const addIssueAtom = atom(null, (get, set, issue: Issue) => {
   const issuesMap = get(issuesMapAtom);
@@ -46,11 +51,11 @@ export const moveIssueAtom = atom(
     const targetIssues = [...(issuesByColumn[targetColumnId] ?? [])];
     if (sourceColumnId === targetColumnId) {
       const currentIndex = targetIssues.indexOf(issueId);
-      if (currentIndex !== -1) {
-        targetIssues.splice(currentIndex, 1);
+      if (currentIndex !== ARRAY_INDEX.NOT_FOUND) {
+        targetIssues.splice(currentIndex, ARRAY_INDEX.INCREMENT);
       }
     }
-    targetIssues.splice(targetIndex, 0, issueId);
+    targetIssues.splice(targetIndex, ARRAY_INDEX.FIRST, issueId);
 
     set(issuesByColumnAtom, {
       ...issuesByColumn,
@@ -58,7 +63,7 @@ export const moveIssueAtom = atom(
       [targetColumnId]: targetIssues,
     });
 
-    const issue = issuesMap[issueId];
+    const { [issueId]: issue } = issuesMap;
     if (issue !== undefined) {
       set(issuesMapAtom, {
         ...issuesMap,
@@ -89,7 +94,10 @@ export const reorderIssueAtom = atom(
     const activeIndex = columnIssues.indexOf(activeId);
     const overIndex = columnIssues.indexOf(overId);
 
-    if (activeIndex === -1 || overIndex === -1) {
+    if (
+      activeIndex === ARRAY_INDEX.NOT_FOUND ||
+      overIndex === ARRAY_INDEX.NOT_FOUND
+    ) {
       return;
     }
 

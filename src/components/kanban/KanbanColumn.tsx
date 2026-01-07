@@ -7,6 +7,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useAtomValue } from "jotai";
 import { issuesByColumnAtom, issuesMapAtom } from "../../stores";
+import { ARRAY_INDEX, STYLE_VALUES } from "../../constants/kanban";
 import { IssueCard } from "./IssueCard";
 import type { KanbanColumn as KanbanColumnType } from "../../types";
 
@@ -43,7 +44,9 @@ export const KanbanColumn = ({ column }: Props) => {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging
+      ? STYLE_VALUES.OPACITY_DRAGGING
+      : STYLE_VALUES.OPACITY_DEFAULT,
   };
 
   return (
@@ -56,7 +59,10 @@ export const KanbanColumn = ({ column }: Props) => {
         {...attributes}
         {...listeners}
         className="flex cursor-grab items-center justify-between border-b border-gray-700 px-3 py-2"
-        style={{ borderTopColor: column.color, borderTopWidth: 3 }}
+        style={{
+          borderTopColor: column.color,
+          borderTopWidth: STYLE_VALUES.BORDER_WIDTH,
+        }}
       >
         <h3 className="font-medium text-gray-100">{column.title}</h3>
         <span className="rounded bg-gray-700 px-2 py-0.5 text-xs text-gray-400">
@@ -75,7 +81,7 @@ export const KanbanColumn = ({ column }: Props) => {
             ))}
           </div>
         </SortableContext>
-        {issues.length === 0 && (
+        {issues.length === ARRAY_INDEX.FIRST && (
           <div className="flex h-20 items-center justify-center text-sm text-gray-500">
             ドロップしてカードを追加
           </div>

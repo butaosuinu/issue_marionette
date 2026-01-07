@@ -1,7 +1,12 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Issue } from "../../types";
-import { PRIORITY_COLORS } from "../../constants/kanban";
+import {
+  ARRAY_INDEX,
+  LABEL_DISPLAY,
+  PRIORITY_COLORS,
+  STYLE_VALUES,
+} from "../../constants/kanban";
 
 type Props = {
   issue: Issue;
@@ -28,7 +33,9 @@ export const IssueCard = ({ issue, columnId }: Props) => {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging
+      ? STYLE_VALUES.OPACITY_DRAGGING
+      : STYLE_VALUES.OPACITY_DEFAULT,
   };
 
   const priorityColor = PRIORITY_COLORS[issue.priority];
@@ -54,9 +61,9 @@ export const IssueCard = ({ issue, columnId }: Props) => {
         {issue.title}
       </h4>
 
-      {issue.labels.length > 0 && (
+      {issue.labels.length > ARRAY_INDEX.FIRST && (
         <div className="mt-2 flex flex-wrap gap-1">
-          {issue.labels.slice(0, 3).map((label) => (
+          {issue.labels.slice(ARRAY_INDEX.FIRST, LABEL_DISPLAY.MAX_VISIBLE).map((label) => (
             <span
               key={label.id}
               className="rounded px-1.5 py-0.5 text-xs"
@@ -68,9 +75,9 @@ export const IssueCard = ({ issue, columnId }: Props) => {
               {label.name}
             </span>
           ))}
-          {issue.labels.length > 3 && (
+          {issue.labels.length > LABEL_DISPLAY.MAX_VISIBLE && (
             <span className="rounded px-1.5 py-0.5 text-xs text-gray-400">
-              +{issue.labels.length - 3}
+              +{issue.labels.length - LABEL_DISPLAY.MAX_VISIBLE}
             </span>
           )}
         </div>

@@ -31,3 +31,19 @@ export const PRIORITY_LABELS: Readonly<Record<IssuePriority, string>> =
   });
 
 export const DRAG_OVERLAY_STYLE = "rotate-3 opacity-90";
+
+export const ARRAY_INDEX = Object.freeze({
+  NOT_FOUND: -1,
+  FIRST: 0,
+  INCREMENT: 1,
+});
+
+export const STYLE_VALUES = Object.freeze({
+  OPACITY_DRAGGING: 0.5,
+  OPACITY_DEFAULT: 1,
+  BORDER_WIDTH: 3,
+});
+
+export const LABEL_DISPLAY = Object.freeze({
+  MAX_VISIBLE: 3,
+});

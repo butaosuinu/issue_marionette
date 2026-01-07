@@ -47,7 +47,7 @@ describe("issueAtoms", () => {
       store.set(addIssueAtom, issue);
 
       const issuesByColumn = store.get(issuesByColumnAtom);
-      expect(issuesByColumn["todo"]).toContain("issue-1");
+      expect(issuesByColumn.todo).toContain("issue-1");
     });
   });
 
@@ -79,7 +79,7 @@ describe("issueAtoms", () => {
       });
 
       const issuesByColumn = store.get(issuesByColumnAtom);
-      expect(issuesByColumn["todo"]).not.toContain("issue-1");
+      expect(issuesByColumn.todo).not.toContain("issue-1");
       expect(issuesByColumn["in-progress"]).toContain("issue-1");
     });
 
@@ -96,7 +96,7 @@ describe("issueAtoms", () => {
       });
 
       const issuesMap = store.get(issuesMapAtom);
-      expect(issuesMap["issue-1"].columnId).toBe("in-progress");
+      expect(issuesMap["issue-1"]?.columnId).toBe("in-progress");
     });
 
     it("指定したインデックスに挿入される", () => {
@@ -143,7 +143,7 @@ describe("issueAtoms", () => {
       });
 
       const issuesByColumn = store.get(issuesByColumnAtom);
-      expect(issuesByColumn["todo"]).toEqual(["issue-2", "issue-3", "issue-1"]);
+      expect(issuesByColumn.todo).toEqual(["issue-2", "issue-3", "issue-1"]);
     });
 
     it("存在しないIssue IDでは何も起きない", () => {
@@ -159,7 +159,7 @@ describe("issueAtoms", () => {
       });
 
       const issuesByColumn = store.get(issuesByColumnAtom);
-      expect(issuesByColumn["todo"]).toEqual(["issue-1"]);
+      expect(issuesByColumn.todo).toEqual(["issue-1"]);
     });
   });
 
@@ -178,9 +178,9 @@ describe("issueAtoms", () => {
       expect(Object.keys(issuesMap).length).toBe(3);
 
       const issuesByColumn = store.get(issuesByColumnAtom);
-      expect(issuesByColumn["todo"]).toContain("issue-1");
+      expect(issuesByColumn.todo).toContain("issue-1");
       expect(issuesByColumn["in-progress"]).toContain("issue-2");
-      expect(issuesByColumn["done"]).toContain("issue-3");
+      expect(issuesByColumn.done).toContain("issue-3");
     });
   });
 });

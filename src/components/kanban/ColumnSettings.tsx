@@ -63,10 +63,10 @@ export const ColumnSettings = ({ onClose }: Props) => {
                 type="color"
                 value={column.color}
                 onChange={(e) =>
-                  updateColumn({
+                  { updateColumn({
                     columnId: column.id,
                     updates: { color: e.target.value },
-                  })
+                  }); }
                 }
                 className="h-8 w-8 cursor-pointer rounded border-0 bg-transparent"
               />
@@ -74,22 +74,22 @@ export const ColumnSettings = ({ onClose }: Props) => {
                 type="text"
                 value={column.title}
                 onChange={(e) =>
-                  updateColumn({
+                  { updateColumn({
                     columnId: column.id,
                     updates: { title: e.target.value },
-                  })
+                  }); }
                 }
                 className="flex-1 rounded bg-gray-900 px-3 py-2 text-sm text-gray-100"
               />
-              {column.isDefault === false && (
+              {!column.isDefault && (
                 <button
-                  onClick={() => removeColumn(column.id)}
+                  onClick={() => { removeColumn(column.id); }}
                   className="rounded p-1 text-red-400 hover:bg-gray-700 hover:text-red-300"
                 >
                   削除
                 </button>
               )}
-              {column.isDefault === true && (
+              {column.isDefault && (
                 <span className="text-xs text-gray-500">デフォルト</span>
               )}
             </div>
@@ -104,13 +104,13 @@ export const ColumnSettings = ({ onClose }: Props) => {
             <input
               type="color"
               value={newColumnColor}
-              onChange={(e) => setNewColumnColor(e.target.value)}
+              onChange={(e) => { setNewColumnColor(e.target.value); }}
               className="h-10 w-10 cursor-pointer rounded border-0 bg-transparent"
             />
             <input
               type="text"
               value={newColumnTitle}
-              onChange={(e) => setNewColumnTitle(e.target.value)}
+              onChange={(e) => { setNewColumnTitle(e.target.value); }}
               placeholder="カラム名を入力"
               className="flex-1 rounded bg-gray-900 px-3 py-2 text-sm text-gray-100"
               onKeyDown={(e) => {

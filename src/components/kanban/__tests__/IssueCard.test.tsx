@@ -20,8 +20,7 @@ const mockIssue: Issue = {
   columnId: "todo",
 };
 
-const renderWithContext = (issue: Issue) => {
-  return render(
+const renderWithContext = (issue: Issue) => render(
     <Provider>
       <DndContext>
         <SortableContext items={[issue.id]}>
@@ -30,7 +29,6 @@ const renderWithContext = (issue: Issue) => {
       </DndContext>
     </Provider>
   );
-};
 
 describe("IssueCard", () => {
   it("Issue番号が表示される", () => {

@@ -4,13 +4,11 @@ import { Provider } from "jotai";
 import { describe, it, expect, vi } from "vitest";
 import { ColumnSettings } from "../ColumnSettings";
 
-const renderWithProvider = (onClose: () => void = vi.fn()) => {
-  return render(
+const renderWithProvider = (onClose: () => void = vi.fn()) => render(
     <Provider>
       <ColumnSettings onClose={onClose} />
     </Provider>
   );
-};
 
 describe("ColumnSettings", () => {
   it("カラム設定タイトルが表示される", () => {

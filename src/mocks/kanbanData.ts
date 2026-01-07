@@ -86,21 +86,17 @@ export const MOCK_ISSUES: readonly Issue[] = Object.freeze([
 
 export const createMockIssuesMap = (
   issues: readonly Issue[]
-): Record<string, Issue> => {
-  return issues.reduce<Record<string, Issue>>(
+): Record<string, Issue> => issues.reduce<Record<string, Issue>>(
     (acc, issue) => ({ ...acc, [issue.id]: issue }),
     {}
   );
-};
 
 export const createMockIssuesByColumn = (
   issues: readonly Issue[]
-): Record<string, string[]> => {
-  return issues.reduce<Record<string, string[]>>(
+): Record<string, string[]> => issues.reduce<Record<string, string[]>>(
     (acc, issue) => ({
       ...acc,
       [issue.columnId]: [...(acc[issue.columnId] ?? []), issue.id],
     }),
     {}
   );
-};

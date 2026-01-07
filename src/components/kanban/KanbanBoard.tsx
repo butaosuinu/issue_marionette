@@ -1,10 +1,10 @@
 import {
   DndContext,
   pointerWithin,
-  DragEndEvent,
-  DragStartEvent,
+  type DragEndEvent,
+  type DragStartEvent,
   DragOverlay,
-  UniqueIdentifier,
+  type UniqueIdentifier,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -24,8 +24,19 @@ import {
 import { KanbanColumn } from "./KanbanColumn";
 import { ColumnSettings } from "./ColumnSettings";
 import { IssueCard } from "./IssueCard";
-import { DRAG_OVERLAY_STYLE } from "../../constants/kanban";
+import { ARRAY_INDEX, DRAG_OVERLAY_STYLE } from "../../constants/kanban";
 import type { DragData } from "../../types";
+
+const isDragData = (data: unknown): data is DragData => {
+  if (data === null || typeof data !== "object") {
+    return false;
+  }
+  if (!("type" in data)) {
+    return false;
+  }
+  const { type } = data;
+  return type === "issue" || type === "column";
+};
 
 export const KanbanBoard = () => {
   const columns = useAtomValue(sortedColumnsAtom);
@@ -46,7 +57,7 @@ export const KanbanBoard = () => {
 
   useEffect(() => {
     if (import.meta.env.DEV) {
-      import("../../mocks/kanbanData").then(({ MOCK_ISSUES }) => {
+      void import("../../mocks/kanbanData").then(({ MOCK_ISSUES }) => {
         initializeIssues(MOCK_ISSUES);
       });
     }
@@ -54,10 +65,55 @@ export const KanbanBoard = () => {
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id);
-    const data = event.active.data.current as DragData | undefined;
-    if (data?.type === "issue" && data.sourceColumnId !== undefined) {
+    const data = event.active.data.current;
+    if (isDragData(data) && data.type === "issue" && data.sourceColumnId !== undefined) {
       setActiveSourceColumnId(data.sourceColumnId);
     }
+  };
+
+  const handleColumnReorder = (activeId: string, overId: string) => {
+    if (activeId !== overId) {
+      reorderColumns({ activeId, overId });
+    }
+  };
+
+  const handleIssueReorder = (
+    sourceColumnId: string,
+    activeId: string,
+    overId: string
+  ) => {
+    reorderIssue({ columnId: sourceColumnId, activeId, overId });
+  };
+
+  const handleIssueMoveToIssue = (
+    activeId: string,
+    sourceColumnId: string,
+    targetColumnId: string,
+    overId: string
+  ) => {
+    const targetIssueIds = issuesByColumn[targetColumnId] ?? [];
+    const targetIndex = targetIssueIds.indexOf(overId);
+    moveIssue({
+      issueId: activeId,
+      sourceColumnId,
+      targetColumnId,
+      targetIndex:
+        targetIndex >= ARRAY_INDEX.FIRST ? targetIndex : ARRAY_INDEX.FIRST,
+    });
+  };
+
+  const handleIssueMoveToColumn = (
+    activeId: string,
+    sourceColumnId: string,
+    targetColumnId: string
+  ) => {
+    const targetIssueIds = issuesByColumn[targetColumnId] ?? [];
+    moveIssue({
+      issueId: activeId,
+      sourceColumnId,
+      targetColumnId,
+      targetIndex: targetIssueIds.length,
+    });
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -66,76 +122,58 @@ export const KanbanBoard = () => {
     setActiveId(undefined);
     setActiveSourceColumnId(undefined);
 
-    if (over === undefined || over === null) {
+    if (over === null) {
       return;
     }
 
-    const activeData = active.data.current as DragData | undefined;
-    const overData = over.data.current as DragData | undefined;
+    const activeData = active.data.current;
+    const overData = over.data.current;
 
-    if (activeData === undefined || overData === undefined) {
+    if (!isDragData(activeData) || !isDragData(overData)) {
       return;
     }
 
     if (activeData.type === "column" && overData.type === "column") {
-      if (active.id !== over.id) {
-        reorderColumns({
-          activeId: active.id as string,
-          overId: over.id as string,
-        });
-      }
+      handleColumnReorder(String(active.id), String(over.id));
       return;
     }
 
     if (activeData.type === "issue" && activeData.sourceColumnId !== undefined) {
-      const sourceColumnId = activeData.sourceColumnId;
+      const { sourceColumnId } = activeData;
 
       if (overData.type === "issue" && overData.sourceColumnId !== undefined) {
-        const targetColumnId = overData.sourceColumnId;
-
+        const { sourceColumnId: targetColumnId } = overData;
         if (sourceColumnId === targetColumnId) {
-          reorderIssue({
-            columnId: sourceColumnId,
-            activeId: active.id as string,
-            overId: over.id as string,
-          });
+          handleIssueReorder(sourceColumnId, String(active.id), String(over.id));
         } else {
-          const targetIssueIds = issuesByColumn[targetColumnId] ?? [];
-          const targetIndex = targetIssueIds.indexOf(over.id as string);
-          moveIssue({
-            issueId: active.id as string,
+          handleIssueMoveToIssue(
+            String(active.id),
             sourceColumnId,
             targetColumnId,
-            targetIndex: targetIndex >= 0 ? targetIndex : 0,
-          });
+            String(over.id)
+          );
         }
         return;
       }
 
       if (overData.type === "column" && overData.columnId !== undefined) {
-        const targetColumnId = overData.columnId;
+        const { columnId: targetColumnId } = overData;
         if (sourceColumnId !== targetColumnId) {
-          const targetIssueIds = issuesByColumn[targetColumnId] ?? [];
-          moveIssue({
-            issueId: active.id as string,
-            sourceColumnId,
-            targetColumnId,
-            targetIndex: targetIssueIds.length,
-          });
+          handleIssueMoveToColumn(String(active.id), sourceColumnId, targetColumnId);
         }
       }
     }
   };
 
   const activeIssue =
-    activeId !== undefined ? issuesMap[activeId as string] : undefined;
+    activeId === undefined ? undefined : issuesMap[String(activeId)];
 
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between border-b border-gray-700 px-4 py-2">
         <h2 className="text-lg font-semibold text-gray-100">Kanban Board</h2>
         <button
-          onClick={() => setIsSettingsOpen(true)}
+          onClick={() => { setIsSettingsOpen(true); }}
           className="rounded p-2 text-gray-400 hover:bg-gray-700 hover:text-gray-100"
         >
           Settings
@@ -168,7 +206,7 @@ export const KanbanBoard = () => {
       </DndContext>
 
       {isSettingsOpen && (
-        <ColumnSettings onClose={() => setIsSettingsOpen(false)} />
+        <ColumnSettings onClose={() => { setIsSettingsOpen(false); }} />
       )}
     </div>
   );

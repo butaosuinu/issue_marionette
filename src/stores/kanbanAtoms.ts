@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 import type { KanbanColumn } from "../types";
-import { DEFAULT_COLUMNS } from "../constants/kanban";
+import { DEFAULT_COLUMNS, ARRAY_INDEX } from "../constants/kanban";
 import { arrayMove } from "../utils/array";
 
 export const columnsAtom = atom<KanbanColumn[]>([...DEFAULT_COLUMNS]);
@@ -22,8 +22,14 @@ export const addColumnAtom = atom(
   null,
   (get, set, column: Omit<KanbanColumn, "order">) => {
     const columns = get(columnsAtom);
-    const maxOrder = columns.reduce((max, col) => Math.max(max, col.order), -1);
-    const newColumn: KanbanColumn = { ...column, order: maxOrder + 1 };
+    const maxOrder = columns.reduce<number>(
+      (max, col) => Math.max(max, col.order),
+      ARRAY_INDEX.NOT_FOUND
+    );
+    const newColumn: KanbanColumn = {
+      ...column,
+      order: maxOrder + ARRAY_INDEX.INCREMENT,
+    };
     set(columnsAtom, [...columns, newColumn]);
     set(issuesByColumnAtom, { ...get(issuesByColumnAtom), [column.id]: [] });
   }
@@ -65,7 +71,10 @@ export const reorderColumnsAtom = atom(
     const columns = get(columnsAtom);
     const activeIndex = columns.findIndex((c) => c.id === activeId);
     const overIndex = columns.findIndex((c) => c.id === overId);
-    if (activeIndex === -1 || overIndex === -1) {
+    if (
+      activeIndex === ARRAY_INDEX.NOT_FOUND ||
+      overIndex === ARRAY_INDEX.NOT_FOUND
+    ) {
       return;
     }
     const reordered = arrayMove(columns, activeIndex, overIndex);
