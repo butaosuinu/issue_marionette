@@ -9,6 +9,7 @@ import "./index.css";
 const router = createRouter({ routeTree });
 
 declare module "@tanstack/react-router" {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- module augmentation requires interface
   interface Register {
     router: typeof router;
   }

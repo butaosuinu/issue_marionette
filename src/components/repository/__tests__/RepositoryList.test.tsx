@@ -4,12 +4,17 @@ import userEvent from "@testing-library/user-event";
 import { Provider, createStore } from "jotai";
 import type { Repository } from "../../../types";
 
-const { mockInvoke } = vi.hoisted(() => ({
+const { mockInvoke, mockAsk } = vi.hoisted(() => ({
   mockInvoke: vi.fn(),
+  mockAsk: vi.fn(),
 }));
 
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: mockInvoke,
+}));
+
+vi.mock("@tauri-apps/plugin-dialog", () => ({
+  ask: mockAsk,
 }));
 
 // eslint-disable-next-line import/first -- vi.mock must be called before importing mocked modules
@@ -37,6 +42,7 @@ describe("RepositoryList", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockInvoke.mockResolvedValue(undefined);
+    mockAsk.mockResolvedValue(false);
   });
 
   it("空の場合「リポジトリがありません」が表示される", () => {
@@ -102,8 +108,7 @@ describe("RepositoryList", () => {
     ];
     store.set(repositoriesAtom, mockRepos);
 
-    const mockConfirm = vi.fn().mockReturnValue(true);
-    vi.stubGlobal("confirm", mockConfirm);
+    mockAsk.mockResolvedValue(true);
 
     render(
       <Provider store={store}>
@@ -114,15 +119,14 @@ describe("RepositoryList", () => {
     const deleteButton = screen.getByTitle("削除");
     await user.click(deleteButton);
 
-    expect(mockConfirm).toHaveBeenCalledWith(
-      "リポジトリ「test-owner/test-repo」を削除しますか？"
+    expect(mockAsk).toHaveBeenCalledWith(
+      "リポジトリ「test-owner/test-repo」を削除しますか？",
+      { title: "削除確認", kind: "warning" }
     );
 
     await waitFor(() => {
       expect(store.get(repositoriesAtom)).toHaveLength(0);
     });
-
-    vi.unstubAllGlobals();
   });
 
   it("削除確認でキャンセルすると削除されない", async () => {
@@ -138,8 +142,7 @@ describe("RepositoryList", () => {
     ];
     store.set(repositoriesAtom, mockRepos);
 
-    const mockConfirm = vi.fn().mockReturnValue(false);
-    vi.stubGlobal("confirm", mockConfirm);
+    mockAsk.mockResolvedValue(false);
 
     render(
       <Provider store={store}>
@@ -150,9 +153,9 @@ describe("RepositoryList", () => {
     const deleteButton = screen.getByTitle("削除");
     await user.click(deleteButton);
 
-    expect(mockConfirm).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockAsk).toHaveBeenCalled();
+    });
     expect(store.get(repositoriesAtom)).toHaveLength(1);
-
-    vi.unstubAllGlobals();
   });
 });

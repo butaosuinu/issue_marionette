@@ -21,7 +21,8 @@ export const RepositorySelector = () => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current !== null &&
-        !dropdownRef.current.contains(event.target as Node)
+        event.target instanceof Node &&
+        !dropdownRef.current.contains(event.target)
       ) {
         setIsOpen(false);
       }

@@ -46,6 +46,22 @@ export default [
           },
         },
       ],
+      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+      '@typescript-eslint/no-magic-numbers': [
+        'error',
+        {
+          ignore: [0, 1],
+          ignoreArrayIndexes: true,
+          ignoreDefaultValues: true,
+          ignoreEnums: true,
+        },
+      ],
+    },
+  },
+  {
+    files: ['src/**/*.test.{ts,tsx}', 'src/**/__tests__/**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-magic-numbers': 'off',
     },
   },
   ...oxlint.configs['flat/recommended'],

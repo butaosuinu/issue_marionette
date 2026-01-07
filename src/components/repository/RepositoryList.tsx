@@ -1,4 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
+import { ask } from "@tauri-apps/plugin-dialog";
 import {
   repositoriesAtom,
   selectedRepositoryIdAtom,
@@ -21,9 +22,10 @@ const RepositoryItem = ({
   onSelect,
   onDelete,
 }: RepositoryItemProps) => {
-  const handleDelete = () => {
-    const confirmed = window.confirm(
-      `リポジトリ「${repository.owner}/${repository.name}」を削除しますか？`
+  const handleDelete = async () => {
+    const confirmed = await ask(
+      `リポジトリ「${repository.owner}/${repository.name}」を削除しますか？`,
+      { title: "削除確認", kind: "warning" }
     );
     if (confirmed) {
       onDelete(repository.id);
