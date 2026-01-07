@@ -63,7 +63,7 @@ const RepositoryItem = ({
   );
 };
 
-export const RepositoryList = () => {
+const useRepositoryListState = () => {
   const repositories = useAtomValue(repositoriesAtom);
   const selectedId = useAtomValue(selectedRepositoryIdAtom);
   const repositoryError = useAtomValue(repositoryErrorAtom);
@@ -78,6 +78,26 @@ export const RepositoryList = () => {
   const handleDelete = (id: string) => {
     void deleteRepository(id);
   };
+
+  return {
+    repositories,
+    selectedId,
+    repositoryError,
+    isLoading,
+    handleSelect,
+    handleDelete,
+  };
+};
+
+export const RepositoryList = () => {
+  const {
+    repositories,
+    selectedId,
+    repositoryError,
+    isLoading,
+    handleSelect,
+    handleDelete,
+  } = useRepositoryListState();
 
   if (isLoading) {
     return (

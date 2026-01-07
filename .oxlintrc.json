@@ -10,7 +10,16 @@
     "no-debugger": "error",
     "eqeqeq": "error",
     "no-var": "error",
-    "prefer-const": "error"
+    "prefer-const": "error",
+    "unicorn/no-useless-undefined": "off"
   },
-  "ignorePatterns": ["node_modules/", "src-tauri/", "dist/"]
+  "ignorePatterns": ["node_modules/", "src-tauri/", "dist/"],
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx", "**/__tests__/**/*.ts", "**/__tests__/**/*.tsx"],
+      "rules": {
+        "max-lines-per-function": "off"
+      }
+    }
+  ]
 }

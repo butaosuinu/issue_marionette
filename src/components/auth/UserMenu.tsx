@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useLingui } from "@lingui/react";
 import { useGitHubAuth } from "../../hooks";
+import type { GitHubUser } from "../../types";
 
 const MENU_STYLES = Object.freeze({
   container: "relative",
@@ -12,19 +13,17 @@ const MENU_STYLES = Object.freeze({
     "block w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-600 hover:text-gray-100",
 });
 
-export const UserMenu = () => {
-  const { _ } = useLingui();
-  const { user, logout } = useGitHubAuth();
+const useMenuState = (containerRef: React.RefObject<HTMLDivElement | null>) => {
   const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleClickOutside = (event: MouseEvent) => {
-      const { target } = event;
       if (
         containerRef.current !== null &&
-        target instanceof Node &&
-        !containerRef.current.contains(target)
+        event.target instanceof Node &&
+        !containerRef.current.contains(event.target)
       ) {
         setIsOpen(false);
       }
@@ -36,64 +35,76 @@ export const UserMenu = () => {
       }
     };
 
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("keydown", handleKeyDown);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen]);
+  }, [isOpen, containerRef]);
 
-  if (user === undefined) {
-    return null;
-  }
-
-  const toggleMenu = () => {
-    setIsOpen((prev) => !prev);
+  return {
+    isOpen,
+    toggle: () => { setIsOpen((prev) => !prev); },
+    close: () => { setIsOpen(false); },
   };
+};
 
-  const handleLogout = () => {
-    setIsOpen(false);
-    void logout();
-  };
+type UserDropdownProps = {
+  user: GitHubUser;
+  displayName: string;
+  onLogout: () => void;
+};
+
+const UserDropdown = ({ user, displayName, onLogout }: UserDropdownProps) => {
+  const { _ } = useLingui();
+
+  return (
+    <div className={MENU_STYLES.dropdown}>
+      <div className="border-b border-gray-600 px-4 py-2">
+        <p className="text-sm font-medium text-gray-100">{displayName}</p>
+        <p className="text-xs text-gray-400">@{user.login}</p>
+      </div>
+      <button
+        onClick={onLogout}
+        className={MENU_STYLES.menuItem}
+        type="button"
+        data-testid="logout-button"
+      >
+        {_({ id: "auth.logout" })}
+      </button>
+    </div>
+  );
+};
+
+export const UserMenu = () => {
+  const { user, logout } = useGitHubAuth();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { isOpen, toggle, close } = useMenuState(containerRef);
+
+  if (user === undefined) return null;
 
   const displayName = user.name ?? user.login;
+
+  const handleLogout = () => {
+    close();
+    void logout();
+  };
 
   return (
     <div className={MENU_STYLES.container} ref={containerRef}>
       <button
-        onClick={toggleMenu}
+        onClick={toggle}
         className={MENU_STYLES.button}
         type="button"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <img
-          src={user.avatar_url}
-          alt={displayName}
-          className={MENU_STYLES.avatar}
-        />
+        <img src={user.avatar_url} alt={displayName} className={MENU_STYLES.avatar} />
         <span className="text-sm text-gray-300">{displayName}</span>
       </button>
-      {isOpen && (
-        <div className={MENU_STYLES.dropdown}>
-          <div className="border-b border-gray-600 px-4 py-2">
-            <p className="text-sm font-medium text-gray-100">{displayName}</p>
-            <p className="text-xs text-gray-400">@{user.login}</p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className={MENU_STYLES.menuItem}
-            type="button"
-            data-testid="logout-button"
-          >
-            {_({ id: "auth.logout" })}
-          </button>
-        </div>
-      )}
+      {isOpen && <UserDropdown user={user} displayName={displayName} onLogout={handleLogout} />}
     </div>
   );
 };

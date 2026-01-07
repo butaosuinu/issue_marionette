@@ -58,11 +58,13 @@ export default [
       ],
     },
   },
+  ...oxlint.configs['flat/recommended'],
   {
     files: ['src/**/*.test.{ts,tsx}', 'src/**/__tests__/**/*.{ts,tsx}'],
     rules: {
       '@typescript-eslint/no-magic-numbers': 'off',
+      'max-lines-per-function': 'off',
+      'unicorn/no-useless-undefined': 'off',
     },
   },
-  ...oxlint.configs['flat/recommended'],
 ]

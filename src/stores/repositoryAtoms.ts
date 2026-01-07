@@ -14,7 +14,7 @@ export const selectedRepositoryAtom = atom((get) => {
   const repositories = get(repositoriesAtom);
   const selectedId = get(selectedRepositoryIdAtom);
   if (selectedId === undefined) {
-    return undefined;
+    return;
   }
   return repositories.find((repo) => repo.id === selectedId);
 });
