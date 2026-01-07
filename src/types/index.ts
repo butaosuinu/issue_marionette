@@ -7,3 +7,5 @@ export type {
   DragItemType,
   DragData,
 } from "./kanban";
+export type { GitHubUser, AuthState, AuthStatus } from "./auth";
+export type { Result, OkResult, ErrorResult } from "./result";

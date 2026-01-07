@@ -48,11 +48,10 @@ export const KanbanBoard = () => {
   const initializeIssues = useSetAtom(initializeIssuesAtom);
 
   const [activeId, setActiveId] = useState<UniqueIdentifier | undefined>(
-    undefined
-  );
+    );
   const [activeSourceColumnId, setActiveSourceColumnId] = useState<
     string | undefined
-  >(undefined);
+  >();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {

@@ -139,7 +139,8 @@ describe("kanbanAtoms", () => {
       });
 
       const sortedColumns = store.get(sortedColumnsAtom);
-      expect(sortedColumns[sortedColumns.length - 1].id).toBe("backlog");
+      const lastColumn = sortedColumns.at(-1);
+      expect(lastColumn?.id).toBe("backlog");
     });
 
     it("存在しないカラムIDでは何も起きない", () => {

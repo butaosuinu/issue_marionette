@@ -5,9 +5,9 @@ import { arrayMove } from "../utils/array";
 
 export const columnsAtom = atom<KanbanColumn[]>([...DEFAULT_COLUMNS]);
 
-export const sortedColumnsAtom = atom((get) => {
+export const sortedColumnsAtom = atom<KanbanColumn[]>((get) => {
   const columns = get(columnsAtom);
-  return [...columns].sort((a, b) => a.order - b.order);
+  return [...columns].toSorted((a, b) => a.order - b.order);
 });
 
 export const issuesByColumnAtom = atom<Record<string, string[]>>({

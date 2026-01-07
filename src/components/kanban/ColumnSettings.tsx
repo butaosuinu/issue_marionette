@@ -35,7 +35,7 @@ export const ColumnSettings = ({ onClose }: Props) => {
     setNewColumnTitle("");
   };
 
-  const sortedColumns = [...columns].sort((a, b) => a.order - b.order);
+  const sortedColumns = [...columns].toSorted((a, b) => a.order - b.order);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
