@@ -1,6 +1,17 @@
-import { useAtom } from "jotai";
-import { themeAtom } from "../../stores";
+import { useAtom, useAtomValue } from "jotai";
+import { themeAtom, isAuthenticatedAtom } from "../../stores";
+import { LoginButton, UserMenu } from "../auth";
 import type { ThemeMode } from "../../types";
+
+const AuthSection = () => {
+  const isAuthenticated = useAtomValue(isAuthenticatedAtom);
+
+  if (isAuthenticated) {
+    return <UserMenu />;
+  }
+
+  return <LoginButton />;
+};
 
 const THEME_CYCLE: Record<ThemeMode, ThemeMode> = {
   dark: "light",
@@ -36,9 +47,11 @@ export const Header = () => {
           onClick={cycleTheme}
           className="rounded p-2 text-gray-400 hover:bg-gray-700 hover:text-gray-100"
           title={`Theme: ${theme}`}
+          type="button"
         >
           {themeIcon}
         </button>
+        <AuthSection />
       </div>
     </header>
   );

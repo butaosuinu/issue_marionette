@@ -9,4 +9,9 @@ export const messages = {
   "theme.dark": "Dark",
   "theme.light": "Light",
   "theme.system": "System",
+  "auth.login": "Login with GitHub",
+  "auth.logout": "Logout",
+  "auth.authenticating": "Authenticating...",
+  "auth.error.failed": "Authentication failed",
+  "auth.error.codeNotFound": "Failed to get authentication code",
 };

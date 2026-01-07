@@ -10,4 +10,9 @@ export const messages = {
   "theme.dark": "ダーク",
   "theme.light": "ライト",
   "theme.system": "システム",
+  "auth.login": "GitHubでログイン",
+  "auth.logout": "ログアウト",
+  "auth.authenticating": "認証中...",
+  "auth.error.failed": "認証に失敗しました",
+  "auth.error.codeNotFound": "認証コードの取得に失敗しました",
 };
