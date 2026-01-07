@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- CLAUDE.mdでtypeを優先
+ 
 export type GitHubUser = {
   id: number;
   login: string;
@@ -7,7 +7,7 @@ export type GitHubUser = {
   email: string | undefined;
 };
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- CLAUDE.mdでtypeを優先
+ 
 export type AuthState = {
   isAuthenticated: boolean;
   isLoading: boolean;

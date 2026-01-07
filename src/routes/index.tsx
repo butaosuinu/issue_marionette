@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { KanbanBoard } from "../components/kanban";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -6,13 +7,8 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   return (
-    <div className="flex-1 p-6">
-      <h1 className="text-2xl font-bold text-gray-100">
-        issue_marionette
-      </h1>
-      <p className="mt-2 text-gray-400">
-        GitHub issueをタスクとして扱うCoding Agentオーケストレーター
-      </p>
+    <div className="flex h-full flex-1 flex-col">
+      <KanbanBoard />
     </div>
   );
 }
