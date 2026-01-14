@@ -56,6 +56,41 @@ export default [
           ignoreEnums: true,
         },
       ],
+      '@typescript-eslint/prefer-destructuring': [
+        'error',
+        {
+          VariableDeclarator: {
+            array: true,
+            object: true,
+          },
+          AssignmentExpression: {
+            array: false,
+            object: false,
+          },
+        },
+        {
+          enforceForRenamedProperties: false,
+        },
+      ],
+      complexity: ['error', { max: 15 }],
+    },
+  },
+  {
+    files: ['src/constants/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-magic-numbers': 'off',
+    },
+  },
+  {
+    files: ['src/mocks/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-magic-numbers': 'off',
+    },
+  },
+  {
+    files: ['src/components/**/*.tsx'],
+    rules: {
+      'max-lines-per-function': 'off',
     },
   },
   ...oxlint.configs['flat/recommended'],
