@@ -4,7 +4,7 @@ import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 import { resolvedThemeAtom } from "../../stores";
 
-interface Props {
+type Props = {
   children: ReactNode;
 }
 

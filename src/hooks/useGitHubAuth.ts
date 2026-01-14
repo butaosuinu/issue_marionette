@@ -17,7 +17,7 @@ import type { AuthStatus, GitHubUser } from "../types";
 const AUTH_STORE_PATH = "auth.json";
 const AUTH_STORE_KEY = "github_user";
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- CLAUDE.mdでtypeを優先
+ 
 type UseGitHubAuthReturn = {
   status: AuthStatus;
   user: GitHubUser | undefined;
