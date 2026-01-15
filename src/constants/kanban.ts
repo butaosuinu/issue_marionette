@@ -1,4 +1,4 @@
-import type { KanbanColumn, IssuePriority } from "../types";
+import type { KanbanColumn, IssuePriority } from "../types/kanban";
 
 export const DEFAULT_COLUMNS: readonly KanbanColumn[] = Object.freeze([
   { id: "backlog", title: "Backlog", order: 0, isDefault: true, color: "#6B7280" },

@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import type { AuthState, GitHubUser, AuthStatus } from "../types";
+import type { AuthState, GitHubUser, AuthStatus } from "../types/auth";
 
 const DEFAULT_AUTH_STATE: AuthState = {
   isAuthenticated: false,

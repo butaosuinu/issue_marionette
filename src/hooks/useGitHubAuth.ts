@@ -11,8 +11,8 @@ import {
   setAuthSuccessAtom,
   setAuthErrorAtom,
   logoutAtom,
-} from "../stores";
-import type { AuthStatus, GitHubUser } from "../types";
+} from "../stores/authAtoms";
+import type { AuthStatus, GitHubUser } from "../types/auth";
 
 const AUTH_STORE_PATH = "auth.json";
 const AUTH_STORE_KEY = "github_user";

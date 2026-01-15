@@ -102,6 +102,10 @@ const result = await invoke("command_name", { arg1: "value" });
 
 ### TypeScript Guidelines
 
+- **バレルファイル（index.ts）禁止**
+  - `index.ts` や `index.tsx` によるre-exportは使用禁止
+  - 常に直接ファイルパスでインポートすること
+
 - **型の使用**
   - `any`型は使用禁止
   - 型アサーション（Type Assertion）は使用禁止

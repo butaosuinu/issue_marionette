@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useLingui } from "@lingui/react";
-import { useGitHubAuth } from "../../hooks";
-import type { GitHubUser } from "../../types";
+import { useGitHubAuth } from "../../hooks/useGitHubAuth";
+import type { GitHubUser } from "../../types/auth";
 
 const MENU_STYLES = Object.freeze({
   container: "relative",

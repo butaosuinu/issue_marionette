@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import type { Result, ErrorResult } from "../types";
+import type { Result, ErrorResult } from "../types/result";
 
 const isErrorResult = (value: unknown): value is ErrorResult => {
   if (typeof value !== "object" || value === null) {

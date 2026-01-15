@@ -4,8 +4,8 @@ import {
   repositoriesAtom,
   selectedRepositoryAtom,
   selectedRepositoryIdAtom,
-} from "../../stores";
-import type { Repository } from "../../types";
+} from "../../stores/repositoryAtoms";
+import type { Repository } from "../../types/repository";
 
 const LISTBOX_ID = "repository-listbox";
 

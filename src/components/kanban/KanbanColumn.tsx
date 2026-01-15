@@ -6,10 +6,11 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useAtomValue } from "jotai";
-import { issuesByColumnAtom, issuesMapAtom } from "../../stores";
+import { issuesByColumnAtom } from "../../stores/kanbanAtoms";
+import { issuesMapAtom } from "../../stores/issueAtoms";
 import { ARRAY_INDEX, STYLE_VALUES } from "../../constants/kanban";
 import { IssueCard } from "./IssueCard";
-import type { KanbanColumn as KanbanColumnType } from "../../types";
+import type { KanbanColumn as KanbanColumnType } from "../../types/kanban";
 
 type Props = {
   column: KanbanColumnType;

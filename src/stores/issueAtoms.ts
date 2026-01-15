@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import type { Issue } from "../types";
+import type { Issue } from "../types/kanban";
 import { ARRAY_INDEX } from "../constants/kanban";
 import { issuesByColumnAtom } from "./kanbanAtoms";
 import { arrayMove } from "../utils/array";

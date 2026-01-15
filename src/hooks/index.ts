@@ -1,1 +1,0 @@
-export { useGitHubAuth } from "./useGitHubAuth";

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider, createStore } from "jotai";
-import type { Repository } from "../../../types";
+import type { Repository } from "../../../types/repository";
 
 const { mockInvoke } = vi.hoisted(() => ({
   mockInvoke: vi.fn(),
@@ -18,7 +18,7 @@ import { RepositorySelector } from "../RepositorySelector";
 import {
   repositoriesAtom,
   selectedRepositoryIdAtom,
-} from "../../../stores";
+} from "../../../stores/repositoryAtoms";
 
 const createMockRepository = (overrides: Partial<Repository> = {}): Repository => ({
   id: "repo-1",

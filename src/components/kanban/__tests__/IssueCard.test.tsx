@@ -4,7 +4,7 @@ import { DndContext } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
 import { describe, it, expect } from "vitest";
 import { IssueCard } from "../IssueCard";
-import type { Issue } from "../../../types";
+import type { Issue } from "../../../types/kanban";
 
 const mockIssue: Issue = {
   id: "issue-1",

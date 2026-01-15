@@ -2,7 +2,8 @@ import { useEffect, type ReactNode } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
-import { resolvedThemeAtom, loadRepositoriesAtom } from "../../stores";
+import { resolvedThemeAtom } from "../../stores/settingsAtoms";
+import { loadRepositoriesAtom } from "../../stores/repositoryAtoms";
 
 type Props = {
   children: ReactNode;

@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { I18nProvider } from "@lingui/react";
 import { routeTree } from "./routeTree.gen";
-import { i18n } from "./i18n";
+import { i18n } from "./i18n/config";
 import "./index.css";
 
 const router = createRouter({ routeTree });

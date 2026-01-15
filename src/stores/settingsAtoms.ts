@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import type { Settings, ThemeMode, Locale } from "../types";
+import type { Settings, ThemeMode, Locale } from "../types/settings";
 
 const DEFAULT_SETTINGS: Settings = {
   theme: "dark",
