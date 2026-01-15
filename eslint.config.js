@@ -47,6 +47,15 @@ export default [
         },
       ],
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+      '@typescript-eslint/no-magic-numbers': [
+        'error',
+        {
+          ignore: [0, 1],
+          ignoreArrayIndexes: true,
+          ignoreDefaultValues: true,
+          ignoreEnums: true,
+        },
+      ],
       '@typescript-eslint/prefer-destructuring': [
         'error',
         {
@@ -64,13 +73,6 @@ export default [
         },
       ],
       complexity: ['error', { max: 15 }],
-    },
-  },
-  {
-    files: ['src/**/__tests__/**/*.{ts,tsx}', 'src/**/*.test.{ts,tsx}'],
-    rules: {
-      '@typescript-eslint/no-magic-numbers': 'off',
-      'max-lines-per-function': 'off',
     },
   },
   {
@@ -92,4 +94,12 @@ export default [
     },
   },
   ...oxlint.configs['flat/recommended'],
+  {
+    files: ['src/**/*.test.{ts,tsx}', 'src/**/__tests__/**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-magic-numbers': 'off',
+      'max-lines-per-function': 'off',
+      'unicorn/no-useless-undefined': 'off',
+    },
+  },
 ]

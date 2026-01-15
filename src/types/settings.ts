@@ -7,4 +7,4 @@ export type Settings = {
   locale: Locale;
   worktreeBasePath: string;
   claudeCliPath: string;
-}
+};

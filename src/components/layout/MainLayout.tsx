@@ -1,15 +1,20 @@
-import type { ReactNode } from "react";
-import { useAtomValue } from "jotai";
+import { useEffect, type ReactNode } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
-import { resolvedThemeAtom } from "../../stores";
+import { resolvedThemeAtom, loadRepositoriesAtom } from "../../stores";
 
 type Props = {
   children: ReactNode;
-}
+};
 
 export const MainLayout = ({ children }: Props) => {
   const theme = useAtomValue(resolvedThemeAtom);
+  const loadRepositories = useSetAtom(loadRepositoriesAtom);
+
+  useEffect(() => {
+    void loadRepositories();
+  }, [loadRepositories]);
 
   return (
     <div className={theme}>

@@ -1,4 +1,3 @@
- 
 export type GitHubUser = {
   id: number;
   login: string;
@@ -7,7 +6,6 @@ export type GitHubUser = {
   email: string | undefined;
 };
 
- 
 export type AuthState = {
   isAuthenticated: boolean;
   isLoading: boolean;
