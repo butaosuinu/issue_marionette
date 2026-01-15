@@ -9,6 +9,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 過剰なコメントは**禁止**
 - 作業ログ的なコメントは**禁止**
 
+## Static Analysis Rules
+
+### TypeScript Type Checking
+
+- **lsmcp MCPサーバの利用を最優先してください**
+- lsmcpが使えない場合の代替手段
+  - **ファイル単位での型チェックを実行すること**
+  - 全体型チェックよりも、作業対象ファイルの型チェックを優先する
+  - ファイル単位での実行コマンド: `npx tsc --noEmit path/to/file.ts` または `npx tsc --noEmit path/to/file.tsx`
+  - プロジェクト全体の型チェック: `pnpm build` （必要な場合のみ使用）
+
+### Linting (OxLint + ESLint)
+
+- **ファイル単位でのLint実行を優先すること**
+- 全体lintingよりも、作業対象ファイルのlintingを優先する
+- ファイル単位での実行コマンド: `npx oxlint path/to/file.ts && npx eslint path/to/file.ts` または `npx oxlint path/to/file.tsx && npx eslint path/to/file.tsx`
+- プロジェクト全体のlinting: `pnpm lint` （必要な場合のみ使用）
+
+### Formatting (OxFmt + Prettier)
+
+- **ファイル単位でのフォーマット実行を優先すること**
+- TypeScript/JavaScript ファイル: `npx oxfmt path/to/file.ts --write` または `npx oxfmt path/to/file.tsx --write`
+- CSS ファイル: `npx prettier --write path/to/file.css`
+- プロジェクト全体のフォーマット: `pnpm format` （必要な場合のみ使用）
+
 ## Github Guidelines
 
 - `gh` コマンドを使用して issue や PR にアクセスすること
@@ -45,8 +70,8 @@ pnpm tauri build      # ネイティブアプリケーションビルド
 **フロントエンドからの呼び出し**:
 
 ```typescript
-import { invoke } from "@tauri-apps/api/core";
-const result = await invoke("command_name", { arg1: "value" });
+import { invoke } from '@tauri-apps/api/core';
+const result = await invoke('command_name', { arg1: 'value' });
 ```
 
 ## Testing Standards
@@ -63,20 +88,17 @@ const result = await invoke("command_name", { arg1: "value" });
 #### 各テストレベルの役割と優先順位
 
 1. **Static Analysis（静的解析）** - 基盤
-
    - TypeScript 型チェック、ESLint、Prettier
    - 基本的な構文エラーや型エラーを早期発見
    - コードの品質と一貫性を保証
 
 2. **Unit Tests（ユニットテスト）** - 限定的使用
-
    - 純粋な関数、ユーティリティ関数のテスト
    - ビジネスロジックのテスト（カスタム Hooks 等）
    - モック使用は最小限に抑制
    - 複雑な計算ロジックや独立した関数のみを対象
 
 3. **Integration Tests（インテグレーションテスト）** - **最重要**
-
    - **React コンポーネントのテスト - これが最も価値が高い**
    - 実際のユーザー操作をシミュレート
    - MSW を使用して API レスポンスをモック
@@ -139,7 +161,7 @@ const newArray = array.map((item) => transformItem(item));
 const updatedUser = { ...user, age: 30 };
 
 // オブジェクトのイミュータブルな更新
-const user = { name: "John", age: 25 };
+const user = { name: 'John', age: 25 };
 const updatedUser = { ...user, age: 26 };
 
 // 配列のイミュータブルな更新
@@ -156,9 +178,9 @@ const mappedItems = items.map((item) => item * 2);
 
 ```typescript
 // 良い例
-const userName = "John";
+const userName = 'John';
 const MAX_RETRIES = 3;
-const API_ENDPOINT = "https://api.example.com";
+const API_ENDPOINT = 'https://api.example.com';
 function calculateTotal(items) {
   /* ... */
 }
@@ -175,13 +197,13 @@ class UserRepository {
 ```typescript
 // 良い例
 const user = {
-  name: "John",
+  name: 'John',
   address: undefined, // 住所情報がない
 };
 const getValue = () => undefined; // 値が存在しない場合
 
 // DOM関連の例外的な使用
-const element = document.querySelector(".not-exist"); // null が返される可能性あり
+const element = document.querySelector('.not-exist'); // null が返される可能性あり
 if (element === null) {
   // DOM要素が存在しない場合の処理
 }
@@ -206,7 +228,7 @@ if (array.length === 0) {
   // 配列が空の場合の処理
 }
 
-if (text === "") {
+if (text === '') {
   // 文字列が空の場合の処理
 }
 
@@ -243,9 +265,9 @@ if (option.type === REVIEW_OPTION_TYPE.TEXT) {
 }
 
 export const REVIEW_SETTING_TYPE = Object.freeze({
-  BASIC: "basic",
-  DESIGN: "design",
-  PATTERN_TEST: "pattern_test",
+  BASIC: 'basic',
+  DESIGN: 'design',
+  PATTERN_TEST: 'pattern_test',
 });
 ```
 
@@ -320,7 +342,7 @@ const fetchUserData = async (id: string) => {
   if (!response.ok) {
     return {
       ok: false,
-      error: response.error || new Error("Failed to fetch user data"),
+      error: response.error || new Error('Failed to fetch user data'),
     };
   }
 
@@ -336,7 +358,7 @@ const fetchUserData = async (id: string) => {
 };
 
 // 使用例
-const result = await fetchUserData("123");
+const result = await fetchUserData('123');
 if (result.ok) {
   const userData = result.data;
   // 成功時の処理
