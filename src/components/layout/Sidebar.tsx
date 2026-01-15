@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { RepositorySelector } from "../repository";
+import { RepositorySelector } from "../repository/RepositorySelector";
 
 export const Sidebar = () => (
   <aside className="flex w-60 flex-col border-r border-gray-700 bg-gray-800">

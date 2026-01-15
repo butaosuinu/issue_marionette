@@ -6,8 +6,8 @@ import {
   deleteRepositoryAtom,
   repositoryErrorAtom,
   isLoadingAtom,
-} from "../../stores";
-import type { Repository } from "../../types";
+} from "../../stores/repositoryAtoms";
+import type { Repository } from "../../types/repository";
 
 type RepositoryItemProps = {
   repository: Repository;

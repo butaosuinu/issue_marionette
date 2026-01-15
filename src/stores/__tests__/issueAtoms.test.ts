@@ -9,7 +9,7 @@ import {
   initializeIssuesAtom,
 } from "../issueAtoms";
 import { issuesByColumnAtom } from "../kanbanAtoms";
-import type { Issue } from "../../types";
+import type { Issue } from "../../types/kanban";
 
 const createMockIssue = (overrides: Partial<Issue> = {}): Issue => ({
   id: "issue-1",

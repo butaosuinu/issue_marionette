@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 import { invoke } from "@tauri-apps/api/core";
-import type { Repository, RepositoryFormData } from "../types";
+import type { Repository, RepositoryFormData } from "../types/repository";
 
 export const repositoriesAtom = atom<Repository[]>([]);
 

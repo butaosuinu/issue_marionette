@@ -1,4 +1,4 @@
-import type { Issue } from "../types";
+import type { Issue } from "../types/kanban";
 
 export const MOCK_ISSUES: readonly Issue[] = Object.freeze([
   {

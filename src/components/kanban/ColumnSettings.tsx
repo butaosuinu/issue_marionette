@@ -5,7 +5,7 @@ import {
   addColumnAtom,
   removeColumnAtom,
   updateColumnAtom,
-} from "../../stores";
+} from "../../stores/kanbanAtoms";
 
 type Props = {
   onClose: () => void;

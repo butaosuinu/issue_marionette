@@ -4,8 +4,8 @@ import userEvent from "@testing-library/user-event";
 import { Provider, createStore } from "jotai";
 import { I18nProvider } from "@lingui/react";
 import { LoginButton } from "./LoginButton";
-import { authAtom } from "../../stores";
-import { i18n } from "../../i18n";
+import { authAtom } from "../../stores/authAtoms";
+import { i18n } from "../../i18n/config";
 
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),

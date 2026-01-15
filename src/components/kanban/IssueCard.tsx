@@ -1,6 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { Issue } from "../../types";
+import type { Issue } from "../../types/kanban";
 import {
   ARRAY_INDEX,
   LABEL_DISPLAY,

@@ -12,20 +12,13 @@ import {
 } from "@dnd-kit/sortable";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
-import {
-  sortedColumnsAtom,
-  issuesByColumnAtom,
-  issuesMapAtom,
-  moveIssueAtom,
-  reorderIssueAtom,
-  reorderColumnsAtom,
-  initializeIssuesAtom,
-} from "../../stores";
+import { sortedColumnsAtom, issuesByColumnAtom, reorderColumnsAtom } from "../../stores/kanbanAtoms";
+import { issuesMapAtom, moveIssueAtom, reorderIssueAtom, initializeIssuesAtom } from "../../stores/issueAtoms";
 import { KanbanColumn } from "./KanbanColumn";
 import { ColumnSettings } from "./ColumnSettings";
 import { IssueCard } from "./IssueCard";
 import { ARRAY_INDEX, DRAG_OVERLAY_STYLE } from "../../constants/kanban";
-import type { DragData } from "../../types";
+import type { DragData } from "../../types/kanban";
 
 const isDragData = (data: unknown): data is DragData => {
   if (data === null || typeof data !== "object") {

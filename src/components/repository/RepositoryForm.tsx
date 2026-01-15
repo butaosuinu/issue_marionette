@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { open } from "@tauri-apps/plugin-dialog";
-import { repositoryErrorAtom, saveRepositoryAtom } from "../../stores";
-import type { RepositoryFormData } from "../../types";
+import { repositoryErrorAtom, saveRepositoryAtom } from "../../stores/repositoryAtoms";
+import type { RepositoryFormData } from "../../types/repository";
 
 type FormState = {
   owner: string;

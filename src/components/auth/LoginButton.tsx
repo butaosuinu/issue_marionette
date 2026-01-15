@@ -1,5 +1,5 @@
 import { useLingui } from "@lingui/react";
-import { useGitHubAuth } from "../../hooks";
+import { useGitHubAuth } from "../../hooks/useGitHubAuth";
 
 const AUTH_BUTTON_STYLES = Object.freeze({
   base: "flex items-center gap-2 rounded px-4 py-2 text-sm font-medium transition-colors",

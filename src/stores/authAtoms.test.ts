@@ -10,7 +10,7 @@ import {
   setAuthErrorAtom,
   logoutAtom,
 } from "./authAtoms";
-import type { GitHubUser } from "../types";
+import type { GitHubUser } from "../types/auth";
 
 const MOCK_USER_ID = 123;
 

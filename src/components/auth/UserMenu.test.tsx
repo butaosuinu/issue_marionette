@@ -4,9 +4,9 @@ import userEvent from "@testing-library/user-event";
 import { Provider, createStore } from "jotai";
 import { I18nProvider } from "@lingui/react";
 import { UserMenu } from "./UserMenu";
-import { authAtom } from "../../stores";
-import { i18n } from "../../i18n";
-import type { GitHubUser } from "../../types";
+import { authAtom } from "../../stores/authAtoms";
+import { i18n } from "../../i18n/config";
+import type { GitHubUser } from "../../types/auth";
 
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),

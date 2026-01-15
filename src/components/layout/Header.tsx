@@ -1,7 +1,9 @@
 import { useAtom, useAtomValue } from "jotai";
-import { themeAtom, isAuthenticatedAtom } from "../../stores";
-import { LoginButton, UserMenu } from "../auth";
-import type { ThemeMode } from "../../types";
+import { themeAtom } from "../../stores/settingsAtoms";
+import { isAuthenticatedAtom } from "../../stores/authAtoms";
+import { LoginButton } from "../auth/LoginButton";
+import { UserMenu } from "../auth/UserMenu";
+import type { ThemeMode } from "../../types/settings";
 
 const AuthSection = () => {
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
