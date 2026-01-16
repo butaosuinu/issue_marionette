@@ -122,7 +122,10 @@ impl PtyManager {
         let _ = session.command_tx.send(PtyCommand::Close);
 
         if let Err(e) = session.child.kill() {
-            eprintln!("Failed to kill child process for session {}: {}", session_id, e);
+            eprintln!(
+                "Failed to kill child process for session {}: {}",
+                session_id, e
+            );
         }
 
         Ok(())
