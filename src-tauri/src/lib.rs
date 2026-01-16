@@ -5,9 +5,9 @@ pub mod services;
 use commands::{
     close_pty, create_pty_session, create_pull_request, create_worktree, delete_repository,
     exchange_oauth_code, get_agent_status, get_authenticated_user, get_issue, get_stored_token,
-    get_worktree_diff, list_issues, list_labels, list_milestones, list_worktrees, load_repositories,
-    logout, remove_worktree, resize_pty, save_repository, send_agent_input, start_agent,
-    start_oauth_flow, stop_agent, write_pty,
+    get_worktree_diff, list_issues, list_labels, list_milestones, list_worktrees,
+    load_repositories, logout, remove_worktree, resize_pty, save_repository, send_agent_input,
+    start_agent, start_oauth_flow, stop_agent, write_pty,
 };
 use tauri::Emitter;
 use tauri_plugin_deep_link::DeepLinkExt;

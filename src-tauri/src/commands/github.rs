@@ -103,6 +103,7 @@ pub async fn get_stored_token(app: AppHandle) -> Result<Option<String>, String> 
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 #[command]
 pub async fn list_issues(
     app: AppHandle,
@@ -118,8 +119,7 @@ pub async fn list_issues(
     page: Option<u32>,
     exclude_pull_requests: Option<bool>,
 ) -> Result<Vec<Issue>, String> {
-    let auth = TokenStore::load_token(&app)?
-        .ok_or_else(|| "Not authenticated".to_string())?;
+    let auth = TokenStore::load_token(&app)?.ok_or_else(|| "Not authenticated".to_string())?;
 
     let client = GitHubClient::with_token(auth.access_token);
 
@@ -153,8 +153,7 @@ pub async fn get_issue(
     repo: String,
     issue_number: i32,
 ) -> Result<Issue, String> {
-    let auth = TokenStore::load_token(&app)?
-        .ok_or_else(|| "Not authenticated".to_string())?;
+    let auth = TokenStore::load_token(&app)?.ok_or_else(|| "Not authenticated".to_string())?;
 
     let client = GitHubClient::with_token(auth.access_token);
     client.get_issue(&owner, &repo, issue_number).await
@@ -166,8 +165,7 @@ pub async fn list_labels(
     owner: String,
     repo: String,
 ) -> Result<Vec<Label>, String> {
-    let auth = TokenStore::load_token(&app)?
-        .ok_or_else(|| "Not authenticated".to_string())?;
+    let auth = TokenStore::load_token(&app)?.ok_or_else(|| "Not authenticated".to_string())?;
 
     let client = GitHubClient::with_token(auth.access_token);
     client.list_labels(&owner, &repo).await
@@ -179,13 +177,13 @@ pub async fn list_milestones(
     owner: String,
     repo: String,
 ) -> Result<Vec<Milestone>, String> {
-    let auth = TokenStore::load_token(&app)?
-        .ok_or_else(|| "Not authenticated".to_string())?;
+    let auth = TokenStore::load_token(&app)?.ok_or_else(|| "Not authenticated".to_string())?;
 
     let client = GitHubClient::with_token(auth.access_token);
     client.list_milestones(&owner, &repo).await
 }
 
+#[allow(clippy::too_many_arguments)]
 #[command]
 pub async fn create_pull_request(
     app: AppHandle,
@@ -197,8 +195,7 @@ pub async fn create_pull_request(
     base: String,
     draft: Option<bool>,
 ) -> Result<PullRequest, String> {
-    let auth = TokenStore::load_token(&app)?
-        .ok_or_else(|| "Not authenticated".to_string())?;
+    let auth = TokenStore::load_token(&app)?.ok_or_else(|| "Not authenticated".to_string())?;
 
     let client = GitHubClient::with_token(auth.access_token);
 
