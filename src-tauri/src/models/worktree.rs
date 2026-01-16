@@ -14,7 +14,7 @@ pub enum WorktreeStatus {
 pub struct Worktree {
     pub id: String,
     pub repository_id: String,
-    pub issue_number: i32,
+    pub issue_number: Option<i32>,
     pub branch_name: String,
     pub path: String,
     pub status: WorktreeStatus,
