@@ -143,7 +143,11 @@ impl GitService {
     pub fn branch_exists(repo_path: &Path, branch_name: &str) -> Result<bool, String> {
         let output = Command::new("git")
             .current_dir(repo_path)
-            .args(["rev-parse", "--verify", &format!("refs/heads/{}", branch_name)])
+            .args([
+                "rev-parse",
+                "--verify",
+                &format!("refs/heads/{}", branch_name),
+            ])
             .output()
             .map_err(|e| e.to_string())?;
 

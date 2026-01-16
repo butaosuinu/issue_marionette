@@ -33,7 +33,11 @@ pub async fn create_worktree(
             .map_err(|e| format!("Failed to create worktrees directory: {}", e))?;
     }
 
-    let worktree_dir_name = format!("issue-{}-{}", issue_number, sanitize_branch_name(&branch_name));
+    let worktree_dir_name = format!(
+        "issue-{}-{}",
+        issue_number,
+        sanitize_branch_name(&branch_name)
+    );
     let worktree_path = worktrees_dir.join(&worktree_dir_name);
 
     if worktree_path.exists() {
@@ -74,10 +78,7 @@ pub async fn list_worktrees(repo_path: String) -> Result<Vec<Worktree>, String> 
 
     let worktree_infos = GitService::worktree_list_detailed(repo_path)?;
 
-    let repo_name = repo_path
-        .file_name()
-        .and_then(|n| n.to_str())
-        .unwrap_or("");
+    let repo_name = repo_path.file_name().and_then(|n| n.to_str()).unwrap_or("");
 
     let worktrees_dir = repo_path
         .parent()
