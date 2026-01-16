@@ -1,3 +1,7 @@
+use crate::models::{
+    CreatePullRequestRequest, Issue, IssueSortField, Label, ListIssuesParams,
+    ListIssuesStateFilter, Milestone, PullRequest, SortDirection,
+};
 use crate::services::{GitHubClient, GitHubUser, OAuthConfig, StoredAuth, TokenStore};
 use chrono::Utc;
 use once_cell::sync::Lazy;
@@ -97,4 +101,111 @@ pub async fn get_stored_token(app: AppHandle) -> Result<Option<String>, String> 
         Some(auth) => Ok(Some(auth.access_token)),
         None => Ok(None),
     }
+}
+
+#[allow(clippy::too_many_arguments)]
+#[command]
+pub async fn list_issues(
+    app: AppHandle,
+    owner: String,
+    repo: String,
+    state: Option<ListIssuesStateFilter>,
+    labels: Option<String>,
+    milestone: Option<String>,
+    assignee: Option<String>,
+    sort: Option<IssueSortField>,
+    direction: Option<SortDirection>,
+    per_page: Option<u32>,
+    page: Option<u32>,
+    exclude_pull_requests: Option<bool>,
+) -> Result<Vec<Issue>, String> {
+    let auth = TokenStore::load_token(&app)?.ok_or_else(|| "Not authenticated".to_string())?;
+
+    let client = GitHubClient::with_token(auth.access_token);
+
+    let params = ListIssuesParams {
+        state,
+        labels,
+        milestone,
+        assignee,
+        sort,
+        direction,
+        per_page,
+        page,
+    };
+
+    let issues = client.list_issues(&owner, &repo, &params).await?;
+
+    if exclude_pull_requests.unwrap_or(false) {
+        Ok(issues
+            .into_iter()
+            .filter(|issue| issue.pull_request.is_none())
+            .collect())
+    } else {
+        Ok(issues)
+    }
+}
+
+#[command]
+pub async fn get_issue(
+    app: AppHandle,
+    owner: String,
+    repo: String,
+    issue_number: i32,
+) -> Result<Issue, String> {
+    let auth = TokenStore::load_token(&app)?.ok_or_else(|| "Not authenticated".to_string())?;
+
+    let client = GitHubClient::with_token(auth.access_token);
+    client.get_issue(&owner, &repo, issue_number).await
+}
+
+#[command]
+pub async fn list_labels(
+    app: AppHandle,
+    owner: String,
+    repo: String,
+) -> Result<Vec<Label>, String> {
+    let auth = TokenStore::load_token(&app)?.ok_or_else(|| "Not authenticated".to_string())?;
+
+    let client = GitHubClient::with_token(auth.access_token);
+    client.list_labels(&owner, &repo).await
+}
+
+#[command]
+pub async fn list_milestones(
+    app: AppHandle,
+    owner: String,
+    repo: String,
+) -> Result<Vec<Milestone>, String> {
+    let auth = TokenStore::load_token(&app)?.ok_or_else(|| "Not authenticated".to_string())?;
+
+    let client = GitHubClient::with_token(auth.access_token);
+    client.list_milestones(&owner, &repo).await
+}
+
+#[allow(clippy::too_many_arguments)]
+#[command]
+pub async fn create_pull_request(
+    app: AppHandle,
+    owner: String,
+    repo: String,
+    title: String,
+    body: Option<String>,
+    head: String,
+    base: String,
+    draft: Option<bool>,
+) -> Result<PullRequest, String> {
+    let auth = TokenStore::load_token(&app)?.ok_or_else(|| "Not authenticated".to_string())?;
+
+    let client = GitHubClient::with_token(auth.access_token);
+
+    let request = CreatePullRequestRequest {
+        title,
+        body,
+        head,
+        base,
+        draft,
+    };
+
+    client.create_pull_request(&owner, &repo, &request).await
 }
