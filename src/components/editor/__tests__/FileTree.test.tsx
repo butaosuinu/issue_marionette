@@ -28,9 +28,8 @@ const createDirNode = (
   ...overrides,
 });
 
-const renderWithProviders = (ui: React.ReactElement) => {
-  return render(<I18nProvider i18n={i18n}>{ui}</I18nProvider>);
-};
+const renderWithProviders = (ui: React.ReactElement) =>
+  render(<I18nProvider i18n={i18n}>{ui}</I18nProvider>);
 
 describe("FileTree", () => {
   it("空のノードリストで「変更はありません」を表示する", () => {

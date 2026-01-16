@@ -57,13 +57,12 @@ const createMockDiffResponse = (files: FileDiff[] = []): DiffResponse => ({
 const renderWithProviders = (
   ui: React.ReactElement,
   store = createStore()
-) => {
-  return render(
+) =>
+  render(
     <Provider store={store}>
       <I18nProvider i18n={i18n}>{ui}</I18nProvider>
     </Provider>
   );
-};
 
 describe("DiffViewer", () => {
   beforeEach(() => {
@@ -79,12 +78,11 @@ describe("DiffViewer", () => {
     expect(screen.getByText("変更はありません")).toBeInTheDocument();
   });
 
-  it("ローディング状態を表示する", async () => {
-    mockInvoke.mockImplementation(
-      () => new Promise(() => {})
-    );
+  it("ローディング状態を表示する", () => {
+    const store = createStore();
+    store.set(diffStateAtom, { ...DEFAULT_DIFF_STATE, isLoading: true });
 
-    renderWithProviders(<DiffViewer worktreePath="/path/to/worktree" />);
+    renderWithProviders(<DiffViewer />, store);
 
     expect(screen.getByText("読み込み中...")).toBeInTheDocument();
   });

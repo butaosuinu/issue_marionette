@@ -126,7 +126,7 @@ describe("buildFileTree", () => {
     ];
 
     const result = buildFileTree({ files });
-    const srcNode = result[0];
+    const [srcNode] = result;
 
     expect(srcNode.children[0].type).toBe("directory");
     expect(srcNode.children[0].name).toBe("components");
