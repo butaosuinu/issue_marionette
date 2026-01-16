@@ -1,29 +1,54 @@
-use tauri::command;
+use crate::services::PtyManager;
+use std::sync::Arc;
+use std::sync::Mutex;
+use tauri::{command, AppHandle, State};
 
 #[command]
-pub async fn create_pty_session(
-    _working_dir: String,
-    _cols: u16,
-    _rows: u16,
+pub fn create_pty_session(
+    app: AppHandle,
+    state: State<'_, Arc<Mutex<PtyManager>>>,
+    working_dir: String,
+    cols: u16,
+    rows: u16,
 ) -> Result<String, String> {
-    // TODO: Implement PTY session creation
-    Err("Not implemented".to_string())
+    let mut manager = state
+        .lock()
+        .map_err(|e| format!("Failed to lock PtyManager: {}", e))?;
+    manager.create_session(app, working_dir, cols, rows)
 }
 
 #[command]
-pub async fn write_pty(_session_id: String, _data: Vec<u8>) -> Result<(), String> {
-    // TODO: Implement PTY write
-    Ok(())
+pub fn write_pty(
+    state: State<'_, Arc<Mutex<PtyManager>>>,
+    session_id: String,
+    data: Vec<u8>,
+) -> Result<(), String> {
+    let manager = state
+        .lock()
+        .map_err(|e| format!("Failed to lock PtyManager: {}", e))?;
+    manager.write(&session_id, &data)
 }
 
 #[command]
-pub async fn resize_pty(_session_id: String, _cols: u16, _rows: u16) -> Result<(), String> {
-    // TODO: Implement PTY resize
-    Ok(())
+pub fn resize_pty(
+    state: State<'_, Arc<Mutex<PtyManager>>>,
+    session_id: String,
+    cols: u16,
+    rows: u16,
+) -> Result<(), String> {
+    let manager = state
+        .lock()
+        .map_err(|e| format!("Failed to lock PtyManager: {}", e))?;
+    manager.resize(&session_id, cols, rows)
 }
 
 #[command]
-pub async fn close_pty(_session_id: String) -> Result<(), String> {
-    // TODO: Implement PTY close
-    Ok(())
+pub fn close_pty(
+    state: State<'_, Arc<Mutex<PtyManager>>>,
+    session_id: String,
+) -> Result<(), String> {
+    let mut manager = state
+        .lock()
+        .map_err(|e| format!("Failed to lock PtyManager: {}", e))?;
+    manager.close(&session_id)
 }
