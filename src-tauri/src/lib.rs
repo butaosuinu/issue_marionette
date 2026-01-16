@@ -3,10 +3,11 @@ pub mod models;
 pub mod services;
 
 use commands::{
-    close_pty, create_pty_session, create_worktree, delete_repository, exchange_oauth_code,
-    get_agent_status, get_authenticated_user, get_stored_token, get_worktree_diff, list_worktrees,
-    load_repositories, logout, remove_worktree, resize_pty, save_repository, send_agent_input,
-    start_agent, start_oauth_flow, stop_agent, write_pty,
+    close_pty, create_pty_session, create_pull_request, create_worktree, delete_repository,
+    exchange_oauth_code, get_agent_status, get_authenticated_user, get_issue, get_stored_token,
+    get_worktree_diff, list_issues, list_labels, list_milestones, list_worktrees, load_repositories,
+    logout, remove_worktree, resize_pty, save_repository, send_agent_input, start_agent,
+    start_oauth_flow, stop_agent, write_pty,
 };
 use tauri::Emitter;
 use tauri_plugin_deep_link::DeepLinkExt;
@@ -36,12 +37,18 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            // GitHub
+            // GitHub OAuth
             start_oauth_flow,
             exchange_oauth_code,
             get_authenticated_user,
             logout,
             get_stored_token,
+            // GitHub Issues API
+            list_issues,
+            get_issue,
+            list_labels,
+            list_milestones,
+            create_pull_request,
             // Worktree
             create_worktree,
             list_worktrees,
