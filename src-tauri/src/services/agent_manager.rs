@@ -74,7 +74,7 @@ impl AgentManager {
 
         let (command_tx, command_rx) = mpsc::channel::<AgentCommand>();
 
-        let session = AgentSession {
+        let mut session = AgentSession {
             id: session_id.clone(),
             worktree_id: worktree_path.clone(),
             mode,
@@ -85,6 +85,8 @@ impl AgentManager {
 
         spawn_output_reader(app_handle.clone(), session_id.clone(), reader);
         spawn_command_handler(pair.master, writer, command_rx);
+
+        session.status = AgentStatus::Running;
 
         let session_info = AgentSessionInfo {
             session: session.clone(),
@@ -98,9 +100,11 @@ impl AgentManager {
 
         if !issue_context.is_empty() {
             let context_with_newline = format!("{}\n", issue_context);
-            command_tx
-                .send(AgentCommand::Write(context_with_newline.into_bytes()))
-                .map_err(|e| format!("Failed to send issue context: {}", e))?;
+            if let Err(e) = command_tx.send(AgentCommand::Write(context_with_newline.into_bytes()))
+            {
+                self.sessions.remove(&session_id);
+                return Err(format!("Failed to send issue context: {}", e));
+            }
         }
 
         Ok(session)
@@ -152,6 +156,7 @@ impl AgentManager {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub fn get_session(&self, session_id: &str) -> Option<&AgentSessionInfo> {
         self.sessions.get(session_id)
     }
@@ -173,8 +178,11 @@ fn build_claude_command(worktree_path: &str, mode: &AgentMode) -> CommandBuilder
     let mut cmd = CommandBuilder::new("claude");
     cmd.cwd(worktree_path);
 
-    if matches!(mode, AgentMode::Plan) {
-        cmd.arg("--plan");
+    match mode {
+        AgentMode::Plan => {
+            cmd.arg("--plan");
+        }
+        AgentMode::Act => {}
     }
 
     cmd
@@ -199,7 +207,10 @@ fn spawn_output_reader(
         let mut buffer = [0u8; AGENT_READ_BUFFER_SIZE];
         loop {
             match reader.read(&mut buffer) {
-                Ok(0) => break,
+                Ok(0) => {
+                    emit_status_change(&app_handle, &session_id, AgentStatus::Completed);
+                    break;
+                }
                 Ok(n) => {
                     let payload = AgentOutputEvent {
                         session_id: session_id.clone(),
@@ -207,11 +218,13 @@ fn spawn_output_reader(
                     };
                     if let Err(e) = app_handle.emit("agent-output", payload) {
                         eprintln!("Failed to emit agent-output event: {}", e);
+                        emit_status_change(&app_handle, &session_id, AgentStatus::Error);
                         break;
                     }
                 }
                 Err(e) => {
                     eprintln!("Agent read error for session {}: {}", session_id, e);
+                    emit_status_change(&app_handle, &session_id, AgentStatus::Error);
                     break;
                 }
             }
