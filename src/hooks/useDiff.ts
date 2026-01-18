@@ -46,7 +46,7 @@ export const useDiff = (): UseDiffReturn => {
   const doInitializeSelectedFile = useSetAtom(initializeSelectedFileAtom);
 
   useEffect(() => {
-    doInitializeSelectedFile();
+    void doInitializeSelectedFile();
   }, [files, doInitializeSelectedFile]);
 
   const selectFile = useCallback(

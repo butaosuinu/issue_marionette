@@ -12,9 +12,8 @@ const mockSelectedRepository = vi.hoisted(() => ({
   value: undefined as Repository | undefined,
 }));
 
-vi.mock("../../../stores/repositoryAtoms", async (importOriginal) => {
-  const original =
-    await importOriginal<typeof import("../../../stores/repositoryAtoms")>();
+vi.mock("../../../stores/repositoryAtoms", async () => {
+  const original = await vi.importActual("../../../stores/repositoryAtoms");
   return {
     ...original,
     repositoriesSuspenseAtom: atom(() => mockRepositories.value),

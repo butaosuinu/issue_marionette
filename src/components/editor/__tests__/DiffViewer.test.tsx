@@ -9,7 +9,7 @@ import type { FileDiff, FileTreeNode, DiffViewMode } from "../../../types/diff";
 const mockUseDiff = vi.fn();
 
 vi.mock("../../../hooks/useDiff", () => ({
-  useDiff: () => mockUseDiff(),
+  useDiff: (): ReturnType<typeof mockUseDiff> => mockUseDiff(),
 }));
 
 vi.mock("@monaco-editor/react", () => ({
