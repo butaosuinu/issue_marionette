@@ -20,6 +20,7 @@ export const DEFAULT_TERMINAL_STATE: TerminalState = Object.freeze({
   tabs: [],
   activeTabId: undefined,
   sessions: {},
+  tabCounter: 0,
 });
 
 export const TERMINAL_TAB_LIMIT = 10;

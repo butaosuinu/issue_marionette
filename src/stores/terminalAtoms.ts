@@ -44,11 +44,11 @@ export const tabCountAtom = atom<number>(
 
 export const addTabAtom = atom(null, (get, set) => {
   const state = get(terminalStateAtom);
-  const tabNumber = state.tabs.length + 1;
+  const nextCounter = state.tabCounter + 1;
   const tabId = `${TAB_ID_PREFIX}${Date.now()}`;
   const newTab: TerminalTab = {
     id: tabId,
-    label: `${TAB_LABEL_PREFIX}${tabNumber}`,
+    label: `${TAB_LABEL_PREFIX}${nextCounter}`,
     sessionId: undefined,
     isActive: true,
   };
@@ -57,6 +57,7 @@ export const addTabAtom = atom(null, (get, set) => {
     ...state,
     tabs: [...updatedTabs, newTab],
     activeTabId: tabId,
+    tabCounter: nextCounter,
   });
   return tabId;
 });

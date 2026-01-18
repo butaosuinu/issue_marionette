@@ -19,10 +19,19 @@ const Tab = ({ tab, onSelect, onClose }: TabProps) => {
     onClose();
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onSelect();
+    }
+  };
+
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onSelect}
+      onKeyDown={handleKeyDown}
       className={`${TERMINAL_STYLES.tabButton} ${
         tab.isActive ? TERMINAL_STYLES.tabActive : TERMINAL_STYLES.tabInactive
       }`}
@@ -36,7 +45,7 @@ const Tab = ({ tab, onSelect, onClose }: TabProps) => {
       >
         <span className="text-xs">×</span>
       </button>
-    </button>
+    </div>
   );
 };
 
@@ -105,6 +114,72 @@ const EmptyState = ({ onCreateTab }: EmptyStateProps) => (
   </div>
 );
 
+type TerminalPaneProps = {
+  tab: TerminalTab;
+  isVisible: boolean;
+  workingDir: string;
+  createSession: (params: {
+    tabId: string;
+    workingDir: string;
+    size: TerminalSize;
+  }) => Promise<string | undefined>;
+  writeToSession: (params: { sessionId: string; data: string }) => Promise<void>;
+  resizeSession: (params: {
+    sessionId: string;
+    size: TerminalSize;
+  }) => Promise<void>;
+};
+
+const TerminalPane = ({
+  tab,
+  isVisible,
+  workingDir,
+  createSession,
+  writeToSession,
+  resizeSession,
+}: TerminalPaneProps) => {
+  const handleSessionCreate = useCallback(
+    async ({ size }: { size: TerminalSize }) =>
+      await createSession({
+        tabId: tab.id,
+        workingDir,
+        size,
+      }),
+    [tab.id, createSession, workingDir]
+  );
+
+  const handleInput = useCallback(
+    ({ data }: { data: string }) => {
+      if (tab.sessionId === undefined) {
+        return;
+      }
+      void writeToSession({ sessionId: tab.sessionId, data });
+    },
+    [tab.sessionId, writeToSession]
+  );
+
+  const handleResize = useCallback(
+    ({ size }: { size: TerminalSize }) => {
+      if (tab.sessionId === undefined) {
+        return;
+      }
+      void resizeSession({ sessionId: tab.sessionId, size });
+    },
+    [tab.sessionId, resizeSession]
+  );
+
+  return (
+    <div className={`absolute inset-0 ${isVisible ? "block" : "hidden"}`}>
+      <Terminal
+        sessionId={tab.sessionId}
+        onSessionCreate={handleSessionCreate}
+        onInput={handleInput}
+        onResize={handleResize}
+      />
+    </div>
+  );
+};
+
 type TerminalTabsProps = {
   workingDir: string;
 };
@@ -112,7 +187,6 @@ type TerminalTabsProps = {
 export const TerminalTabs = ({ workingDir }: TerminalTabsProps) => {
   const {
     tabs,
-    activeTab,
     tabCount,
     createTab,
     closeTab,
@@ -127,40 +201,6 @@ export const TerminalTabs = ({ workingDir }: TerminalTabsProps) => {
   const handleNewTab = useCallback(() => {
     createTab();
   }, [createTab]);
-
-  const handleSessionCreate = useCallback(
-    async ({ size }: { size: TerminalSize }) => {
-      if (activeTab === undefined) {
-        return undefined;
-      }
-      return await createSession({
-        tabId: activeTab.id,
-        workingDir,
-        size,
-      });
-    },
-    [activeTab, createSession, workingDir]
-  );
-
-  const handleInput = useCallback(
-    ({ data }: { data: string }) => {
-      if (activeTab?.sessionId === undefined) {
-        return;
-      }
-      void writeToSession({ sessionId: activeTab.sessionId, data });
-    },
-    [activeTab, writeToSession]
-  );
-
-  const handleResize = useCallback(
-    ({ size }: { size: TerminalSize }) => {
-      if (activeTab?.sessionId === undefined) {
-        return;
-      }
-      void resizeSession({ sessionId: activeTab.sessionId, size });
-    },
-    [activeTab, resizeSession]
-  );
 
   if (tabs.length === 0) {
     return <EmptyState onCreateTab={handleNewTab} />;
@@ -177,19 +217,15 @@ export const TerminalTabs = ({ workingDir }: TerminalTabsProps) => {
       />
       <div className="relative flex-1">
         {tabs.map((tab) => (
-          <div
+          <TerminalPane
             key={tab.id}
-            className={`absolute inset-0 ${tab.isActive ? "block" : "hidden"}`}
-          >
-            {tab.isActive && (
-              <Terminal
-                sessionId={tab.sessionId}
-                onSessionCreate={handleSessionCreate}
-                onInput={handleInput}
-                onResize={handleResize}
-              />
-            )}
-          </div>
+            tab={tab}
+            isVisible={tab.isActive}
+            workingDir={workingDir}
+            createSession={createSession}
+            writeToSession={writeToSession}
+            resizeSession={resizeSession}
+          />
         ))}
       </div>
     </div>

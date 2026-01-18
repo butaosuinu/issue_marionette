@@ -22,6 +22,7 @@ export type TerminalState = {
   tabs: TerminalTab[];
   activeTabId: string | undefined;
   sessions: Record<string, TerminalSession>;
+  tabCounter: number;
 };
 
 export type PtyOutputPayload = {
