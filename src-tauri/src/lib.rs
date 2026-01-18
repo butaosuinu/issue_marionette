@@ -9,7 +9,7 @@ use commands::{
     load_repositories, logout, remove_worktree, resize_pty, save_repository, send_agent_input,
     start_agent, start_oauth_flow, stop_agent, write_pty,
 };
-use services::PtyManager;
+use services::{AgentManager, PtyManager};
 use std::sync::{Arc, Mutex};
 use tauri::Emitter;
 use tauri_plugin_deep_link::DeepLinkExt;
@@ -25,6 +25,7 @@ pub fn run() {
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_dialog::init())
         .manage(Arc::new(Mutex::new(PtyManager::new())))
+        .manage(Arc::new(Mutex::new(AgentManager::new())))
         .setup(|app| {
             #[cfg(desktop)]
             {
