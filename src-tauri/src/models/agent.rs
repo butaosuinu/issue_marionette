@@ -43,3 +43,15 @@ pub struct AgentOutput {
     pub content: String,
     pub timestamp: String,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AgentOutputEvent {
+    pub session_id: String,
+    pub data: Vec<u8>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AgentStatusEvent {
+    pub session_id: String,
+    pub status: AgentStatus,
+}
