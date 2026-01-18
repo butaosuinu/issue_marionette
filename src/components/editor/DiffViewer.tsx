@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { DiffEditor } from "@monaco-editor/react";
 import { useLingui } from "@lingui/react";
 import { useDiff } from "../../hooks/useDiff";
 import { FileTree } from "./FileTree";
+import { ErrorBoundary } from "../error/ErrorBoundary";
 import { DIFF_VIEW_MODE, MONACO_DIFF_OPTIONS } from "../../constants/diff";
 import { getFileLanguage } from "../../utils/diffParser";
 import type { DiffViewMode } from "../../types/diff";
@@ -74,16 +75,23 @@ const LoadingState = () => {
   );
 };
 
-type ErrorStateProps = {
-  error: string;
+type DiffErrorFallbackProps = {
+  error: Error;
+  reset: () => void;
 };
 
-const ErrorState = ({ error }: ErrorStateProps) => {
+const DiffErrorFallback = ({ error, reset }: DiffErrorFallbackProps) => {
   const { _ } = useLingui();
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-2 text-red-400">
+    <div className="flex h-full flex-col items-center justify-center gap-4 text-red-400">
       <span>{_({ id: "diff.error" })}</span>
-      <span className="text-sm text-gray-500">{error}</span>
+      <span className="text-sm text-gray-500">{error.message}</span>
+      <button
+        onClick={reset}
+        className="rounded bg-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
+      >
+        再試行
+      </button>
     </div>
   );
 };
@@ -97,67 +105,25 @@ const EmptyState = () => {
   );
 };
 
-type UseDiffViewerStateParams = {
+type DiffViewerContentProps = {
   worktreePath: string | undefined;
 };
 
-const useDiffViewerState = ({ worktreePath }: UseDiffViewerStateParams) => {
+const DiffViewerContent = ({ worktreePath }: DiffViewerContentProps) => {
   const {
-    isLoading,
-    error,
     files,
     selectedFilePath,
     selectedFileDiff,
     viewMode,
     fileTree,
-    loadDiff,
     selectFile,
     setViewMode,
+    setWorktreePath,
   } = useDiff();
 
   useEffect(() => {
-    if (worktreePath !== undefined) {
-      void loadDiff({ worktreePath });
-    }
-  }, [loadDiff, worktreePath]);
-
-  return {
-    isLoading,
-    error,
-    files,
-    selectedFilePath,
-    selectedFileDiff,
-    viewMode,
-    fileTree,
-    selectFile,
-    setViewMode,
-  };
-};
-
-type DiffViewerProps = {
-  worktreePath?: string;
-};
-
-export const DiffViewer = ({ worktreePath }: DiffViewerProps) => {
-  const {
-    isLoading,
-    error,
-    files,
-    selectedFilePath,
-    selectedFileDiff,
-    viewMode,
-    fileTree,
-    selectFile,
-    setViewMode,
-  } = useDiffViewerState({ worktreePath });
-
-  if (isLoading) {
-    return <LoadingState />;
-  }
-
-  if (error !== undefined) {
-    return <ErrorState error={error} />;
-  }
+    setWorktreePath({ worktreePath });
+  }, [worktreePath, setWorktreePath]);
 
   if (files.length === 0) {
     return <EmptyState />;
@@ -212,3 +178,15 @@ export const DiffViewer = ({ worktreePath }: DiffViewerProps) => {
     </div>
   );
 };
+
+type DiffViewerProps = {
+  worktreePath?: string;
+};
+
+export const DiffViewer = ({ worktreePath }: DiffViewerProps) => (
+  <ErrorBoundary fallback={DiffErrorFallback}>
+    <Suspense fallback={<LoadingState />}>
+      <DiffViewerContent worktreePath={worktreePath} />
+    </Suspense>
+  </ErrorBoundary>
+);

@@ -2,43 +2,42 @@ import { atom } from "jotai";
 import { invoke } from "@tauri-apps/api/core";
 import type { Repository, RepositoryFormData } from "../types/repository";
 
-export const repositoriesAtom = atom<Repository[]>([]);
+const repositoriesRefreshAtom = atom(0);
+
+export const repositoriesSuspenseAtom = atom(async (get) => {
+  get(repositoriesRefreshAtom);
+  const result = await invoke<Repository[]>("load_repositories").catch(
+    (err: unknown) => {
+      throw err instanceof Error
+        ? err
+        : new Error("リポジトリの読み込みに失敗しました");
+    }
+  );
+  return result;
+});
+
+export const refreshRepositoriesAtom = atom(null, (_get, set) => {
+  set(repositoriesRefreshAtom, (prev) => prev + 1);
+});
 
 export const selectedRepositoryIdAtom = atom<string | undefined>(undefined);
 
-export const repositoryErrorAtom = atom<string | undefined>(undefined);
-
-export const isLoadingAtom = atom(false);
-
-export const selectedRepositoryAtom = atom((get) => {
-  const repositories = get(repositoriesAtom);
+export const selectedRepositoryAtom = atom(async (get) => {
+  const repositories = await get(repositoriesSuspenseAtom);
   const selectedId = get(selectedRepositoryIdAtom);
   if (selectedId === undefined) {
-    return;
+    return undefined;
   }
   return repositories.find((repo) => repo.id === selectedId);
 });
 
-export const loadRepositoriesAtom = atom(null, async (_get, set) => {
-  set(repositoryErrorAtom, undefined);
-  set(isLoadingAtom, true);
-  const result = await invoke<Repository[]>("load_repositories").catch(
-    (err: unknown) => {
-      const errorMessage =
-        err instanceof Error ? err.message : "リポジトリの読み込みに失敗しました";
-      set(repositoryErrorAtom, errorMessage);
-      return [] as Repository[];
-    }
-  );
-  set(repositoriesAtom, result);
-  set(isLoadingAtom, false);
-  return result;
-});
+type SaveResult =
+  | { ok: true; repository: Repository }
+  | { ok: false; error: unknown };
 
 export const saveRepositoryAtom = atom(
   null,
-  async (get, set, formData: RepositoryFormData) => {
-    set(repositoryErrorAtom, undefined);
+  async (_get, set, formData: RepositoryFormData) => {
     const now = new Date().toISOString();
     const newRepository: Repository = {
       id: crypto.randomUUID(),
@@ -52,8 +51,32 @@ export const saveRepositoryAtom = atom(
       updated_at: now,
     };
 
-    const result = await invoke("save_repository", {
+    const result: SaveResult = await invoke("save_repository", {
       repository: newRepository,
+    })
+      .then(() => ({ ok: true as const, repository: newRepository }))
+      .catch((err: unknown) => ({ ok: false as const, error: err }));
+
+    if (!result.ok) {
+      const errorMessage =
+        result.error instanceof Error
+          ? result.error.message
+          : "リポジトリの保存に失敗しました";
+      throw new Error(errorMessage);
+    }
+
+    set(refreshRepositoriesAtom);
+    return { ok: true as const, repository: newRepository };
+  }
+);
+
+type DeleteResult = { ok: true } | { ok: false; error: unknown };
+
+export const deleteRepositoryAtom = atom(
+  null,
+  async (get, set, repoId: string) => {
+    const result: DeleteResult = await invoke("delete_repository", {
+      id: repoId,
     })
       .then(() => ({ ok: true as const }))
       .catch((err: unknown) => ({ ok: false as const, error: err }));
@@ -62,45 +85,16 @@ export const saveRepositoryAtom = atom(
       const errorMessage =
         result.error instanceof Error
           ? result.error.message
-          : "リポジトリの保存に失敗しました";
-      set(repositoryErrorAtom, errorMessage);
-      return { ok: false as const, error: result.error };
-    }
-
-    const currentRepos = get(repositoriesAtom);
-    set(repositoriesAtom, [...currentRepos, newRepository]);
-    return { ok: true as const, repository: newRepository };
-  }
-);
-
-export const deleteRepositoryAtom = atom(
-  null,
-  async (get, set, repoId: string) => {
-    set(repositoryErrorAtom, undefined);
-    const result = await invoke("delete_repository", { id: repoId })
-      .then(() => ({ ok: true as const }))
-      .catch((err: unknown) => ({ ok: false as const, error: err }));
-
-    if (!result.ok) {
-      const errorMessage =
-        result.error instanceof Error
-          ? result.error.message
           : "リポジトリの削除に失敗しました";
-      set(repositoryErrorAtom, errorMessage);
-      return { ok: false as const, error: result.error };
+      throw new Error(errorMessage);
     }
-
-    const currentRepos = get(repositoriesAtom);
-    set(
-      repositoriesAtom,
-      currentRepos.filter((repo) => repo.id !== repoId)
-    );
 
     const selectedId = get(selectedRepositoryIdAtom);
     if (selectedId === repoId) {
       set(selectedRepositoryIdAtom, undefined);
     }
 
+    set(refreshRepositoriesAtom);
     return { ok: true as const };
   }
 );

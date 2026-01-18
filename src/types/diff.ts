@@ -13,8 +13,6 @@ export type FileDiff = {
 export type DiffViewMode = "sideBySide" | "inline";
 
 export type DiffState = {
-  isLoading: boolean;
-  error: string | undefined;
   files: FileDiff[];
   selectedFilePath: string | undefined;
   viewMode: DiffViewMode;
