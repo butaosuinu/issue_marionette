@@ -1,26 +1,35 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Provider, createStore } from "jotai";
+import { Provider, createStore, atom } from "jotai";
 import type { Repository } from "../../../types/repository";
 
-const { mockInvoke } = vi.hoisted(() => ({
-  mockInvoke: vi.fn(),
+const mockRepositories = vi.hoisted(() => ({
+  value: [] as Repository[],
 }));
 
-vi.mock("@tauri-apps/api/core", () => ({
-  invoke: mockInvoke,
+const mockSelectedRepository = vi.hoisted(() => ({
+  value: undefined as Repository | undefined,
 }));
+
+vi.mock("../../../stores/repositoryAtoms", async (importOriginal) => {
+  const original =
+    await importOriginal<typeof import("../../../stores/repositoryAtoms")>();
+  return {
+    ...original,
+    repositoriesSuspenseAtom: atom(() => mockRepositories.value),
+    selectedRepositoryAtom: atom(() => mockSelectedRepository.value),
+  };
+});
 
 // eslint-disable-next-line import/first -- vi.mock must be called before importing mocked modules
 import { RepositorySelector } from "../RepositorySelector";
 // eslint-disable-next-line import/first -- vi.mock must be called before importing mocked modules
-import {
-  repositoriesAtom,
-  selectedRepositoryIdAtom,
-} from "../../../stores/repositoryAtoms";
+import { selectedRepositoryIdAtom } from "../../../stores/repositoryAtoms";
 
-const createMockRepository = (overrides: Partial<Repository> = {}): Repository => ({
+const createMockRepository = (
+  overrides: Partial<Repository> = {}
+): Repository => ({
   id: "repo-1",
   owner: "test-owner",
   name: "test-repo",
@@ -33,38 +42,31 @@ const createMockRepository = (overrides: Partial<Repository> = {}): Repository =
   ...overrides,
 });
 
+const renderWithProviders = (ui: React.ReactElement, store = createStore()) =>
+  render(<Provider store={store}>{ui}</Provider>);
+
 describe("RepositorySelector", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockInvoke.mockResolvedValue(undefined);
+    mockRepositories.value = [];
+    mockSelectedRepository.value = undefined;
   });
 
   it("未選択時は「リポジトリ未選択」が表示される", () => {
-    const store = createStore();
-    store.set(repositoriesAtom, []);
+    mockRepositories.value = [];
 
-    render(
-      <Provider store={store}>
-        <RepositorySelector />
-      </Provider>
-    );
+    renderWithProviders(<RepositorySelector />);
 
     expect(screen.getByText("リポジトリ未選択")).toBeInTheDocument();
   });
 
   it("クリックでドロップダウンが開く", async () => {
     const user = userEvent.setup();
-    const store = createStore();
-    const mockRepos = [
+    mockRepositories.value = [
       createMockRepository({ id: "repo-1", full_name: "owner/repo1" }),
     ];
-    store.set(repositoriesAtom, mockRepos);
 
-    render(
-      <Provider store={store}>
-        <RepositorySelector />
-      </Provider>
-    );
+    renderWithProviders(<RepositorySelector />);
 
     const button = screen.getByText("リポジトリ未選択");
     await user.click(button);
@@ -74,17 +76,13 @@ describe("RepositorySelector", () => {
 
   it("リポジトリ選択時にatomが更新される", async () => {
     const user = userEvent.setup();
-    const store = createStore();
-    const mockRepos = [
+    mockRepositories.value = [
       createMockRepository({ id: "repo-1", full_name: "owner/repo1" }),
     ];
-    store.set(repositoriesAtom, mockRepos);
 
-    render(
-      <Provider store={store}>
-        <RepositorySelector />
-      </Provider>
-    );
+    const store = createStore();
+
+    renderWithProviders(<RepositorySelector />, store);
 
     const button = screen.getByText("リポジトリ未選択");
     await user.click(button);
@@ -97,18 +95,12 @@ describe("RepositorySelector", () => {
 
   it("選択後にドロップダウンが閉じる", async () => {
     const user = userEvent.setup();
-    const store = createStore();
-    const mockRepos = [
+    mockRepositories.value = [
       createMockRepository({ id: "repo-1", full_name: "owner/repo1" }),
       createMockRepository({ id: "repo-2", full_name: "owner/repo2" }),
     ];
-    store.set(repositoriesAtom, mockRepos);
 
-    render(
-      <Provider store={store}>
-        <RepositorySelector />
-      </Provider>
-    );
+    renderWithProviders(<RepositorySelector />);
 
     const button = screen.getByText("リポジトリ未選択");
     await user.click(button);
@@ -123,11 +115,11 @@ describe("RepositorySelector", () => {
 
   it("外部クリックでドロップダウンが閉じる", async () => {
     const user = userEvent.setup();
-    const store = createStore();
-    const mockRepos = [
+    mockRepositories.value = [
       createMockRepository({ id: "repo-1", full_name: "owner/repo1" }),
     ];
-    store.set(repositoriesAtom, mockRepos);
+
+    const store = createStore();
 
     render(
       <div>

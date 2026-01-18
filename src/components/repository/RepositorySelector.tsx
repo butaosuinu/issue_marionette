@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
-  repositoriesAtom,
+  repositoriesSuspenseAtom,
   selectedRepositoryAtom,
   selectedRepositoryIdAtom,
 } from "../../stores/repositoryAtoms";
@@ -40,7 +40,11 @@ type RepositoryOptionProps = {
   onSelect: (id: string) => void;
 };
 
-const RepositoryOption = ({ repo, isSelected, onSelect }: RepositoryOptionProps) => {
+const RepositoryOption = ({
+  repo,
+  isSelected,
+  onSelect,
+}: RepositoryOptionProps) => {
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -53,7 +57,9 @@ const RepositoryOption = ({ repo, isSelected, onSelect }: RepositoryOptionProps)
       role="option"
       tabIndex={0}
       aria-selected={isSelected}
-      onClick={() => { onSelect(repo.id); }}
+      onClick={() => {
+        onSelect(repo.id);
+      }}
       onKeyDown={handleKeyDown}
       className={`block w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-gray-700 ${
         isSelected ? "bg-gray-700 text-gray-100" : "text-gray-300"
@@ -70,7 +76,11 @@ type DropdownListProps = {
   onSelect: (id: string) => void;
 };
 
-const DropdownList = ({ repositories, selectedId, onSelect }: DropdownListProps) => {
+const DropdownList = ({
+  repositories,
+  selectedId,
+  onSelect,
+}: DropdownListProps) => {
   if (repositories.length === 0) {
     return (
       <div
@@ -103,14 +113,27 @@ const DropdownList = ({ repositories, selectedId, onSelect }: DropdownListProps)
   );
 };
 
-export const RepositorySelector = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const repositories = useAtomValue(repositoriesAtom);
+export const useRepositorySelectorState = () => {
+  const repositories = useAtomValue(repositoriesSuspenseAtom);
   const selectedRepository = useAtomValue(selectedRepositoryAtom);
   const setSelectedId = useSetAtom(selectedRepositoryIdAtom);
 
-  useClickOutside(dropdownRef, isOpen, () => { setIsOpen(false); });
+  return {
+    repositories,
+    selectedRepository,
+    setSelectedId,
+  };
+};
+
+export const RepositorySelector = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const { repositories, selectedRepository, setSelectedId } =
+    useRepositorySelectorState();
+
+  useClickOutside(dropdownRef, isOpen, () => {
+    setIsOpen(false);
+  });
 
   const handleSelect = (id: string) => {
     setSelectedId(id);
@@ -122,14 +145,18 @@ export const RepositorySelector = () => {
   return (
     <div ref={dropdownRef} className="relative">
       <button
-        onClick={() => { setIsOpen((prev) => !prev); }}
+        onClick={() => {
+          setIsOpen((prev) => !prev);
+        }}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-controls={LISTBOX_ID}
         className="flex w-full items-center justify-between rounded px-3 py-2 text-sm text-gray-300 hover:bg-gray-700"
       >
         <span className="truncate">{displayText}</span>
-        <span aria-hidden="true" className="ml-2">{isOpen ? "▲" : "▼"}</span>
+        <span aria-hidden="true" className="ml-2">
+          {isOpen ? "▲" : "▼"}
+        </span>
       </button>
 
       {isOpen && (

@@ -1,11 +1,9 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { ask } from "@tauri-apps/plugin-dialog";
 import {
-  repositoriesAtom,
+  repositoriesSuspenseAtom,
   selectedRepositoryIdAtom,
   deleteRepositoryAtom,
-  repositoryErrorAtom,
-  isLoadingAtom,
 } from "../../stores/repositoryAtoms";
 import type { Repository } from "../../types/repository";
 
@@ -63,11 +61,9 @@ const RepositoryItem = ({
   );
 };
 
-const useRepositoryListState = () => {
-  const repositories = useAtomValue(repositoriesAtom);
+export const useRepositoryListState = () => {
+  const repositories = useAtomValue(repositoriesSuspenseAtom);
   const selectedId = useAtomValue(selectedRepositoryIdAtom);
-  const repositoryError = useAtomValue(repositoryErrorAtom);
-  const isLoading = useAtomValue(isLoadingAtom);
   const deleteRepository = useSetAtom(deleteRepositoryAtom);
   const setSelectedId = useSetAtom(selectedRepositoryIdAtom);
 
@@ -82,36 +78,14 @@ const useRepositoryListState = () => {
   return {
     repositories,
     selectedId,
-    repositoryError,
-    isLoading,
     handleSelect,
     handleDelete,
   };
 };
 
 export const RepositoryList = () => {
-  const {
-    repositories,
-    selectedId,
-    repositoryError,
-    isLoading,
-    handleSelect,
-    handleDelete,
-  } = useRepositoryListState();
-
-  if (isLoading) {
-    return (
-      <div className="p-4 text-center text-sm text-gray-500">読み込み中...</div>
-    );
-  }
-
-  if (repositoryError !== undefined) {
-    return (
-      <div className="p-4 text-center text-sm text-red-400">
-        {repositoryError}
-      </div>
-    );
-  }
+  const { repositories, selectedId, handleSelect, handleDelete } =
+    useRepositoryListState();
 
   if (repositories.length === 0) {
     return (

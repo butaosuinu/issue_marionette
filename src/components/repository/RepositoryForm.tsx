@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { open } from "@tauri-apps/plugin-dialog";
-import { repositoryErrorAtom, saveRepositoryAtom } from "../../stores/repositoryAtoms";
+import { saveRepositoryAtom } from "../../stores/repositoryAtoms";
 import type { RepositoryFormData } from "../../types/repository";
 
 type FormState = {
@@ -49,7 +49,12 @@ type DirectoryInputProps = {
   placeholder: string;
 };
 
-const DirectoryInput = ({ label, value, onSelect, placeholder }: DirectoryInputProps) => (
+const DirectoryInput = ({
+  label,
+  value,
+  onSelect,
+  placeholder,
+}: DirectoryInputProps) => (
   <div>
     <label className="block text-sm font-medium text-gray-300">{label}</label>
     <div className="mt-1 flex gap-2">
@@ -78,7 +83,12 @@ type CheckboxInputProps = {
   onChange: (checked: boolean) => void;
 };
 
-const CheckboxInput = ({ id, label, checked, onChange }: CheckboxInputProps) => (
+const CheckboxInput = ({
+  id,
+  label,
+  checked,
+  onChange,
+}: CheckboxInputProps) => (
   <div className="flex items-center gap-2">
     <input
       type="checkbox"
@@ -120,8 +130,12 @@ const useFormState = () => {
   const [formState, setFormState] = useState<FormState>(INITIAL_FORM_STATE);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationError, setValidationError] = useState<string | undefined>();
+  const [submitError, setSubmitError] = useState<string | undefined>();
 
-  const handleInputChange = (field: keyof FormState, value: string | boolean) => {
+  const handleInputChange = (
+    field: keyof FormState,
+    value: string | boolean
+  ) => {
     setFormState((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -135,6 +149,8 @@ const useFormState = () => {
     setIsSubmitting,
     validationError,
     setValidationError,
+    submitError,
+    setSubmitError,
     handleInputChange,
     resetForm,
   };
@@ -143,32 +159,51 @@ const useFormState = () => {
 type SubmitHandlerArgs = {
   formState: FormState;
   setValidationError: (error: string | undefined) => void;
+  setSubmitError: (error: string | undefined) => void;
   setIsSubmitting: (submitting: boolean) => void;
   saveRepository: (data: RepositoryFormData) => Promise<{ ok: boolean }>;
   resetForm: () => void;
 };
 
-const createSubmitHandler = (args: SubmitHandlerArgs) => async (e: React.FormEvent) => {
-  e.preventDefault();
-  const { formState, setValidationError, setIsSubmitting, saveRepository, resetForm } = args;
+const createSubmitHandler =
+  (args: SubmitHandlerArgs) => async (e: React.FormEvent) => {
+    e.preventDefault();
+    const {
+      formState,
+      setValidationError,
+      setSubmitError,
+      setIsSubmitting,
+      saveRepository,
+      resetForm,
+    } = args;
 
-  if (!isFormValid(formState)) {
-    setValidationError("すべての必須項目を入力してください");
-    return;
-  }
+    if (!isFormValid(formState)) {
+      setValidationError("すべての必須項目を入力してください");
+      return;
+    }
 
-  setValidationError(undefined);
-  setIsSubmitting(true);
+    setValidationError(undefined);
+    setSubmitError(undefined);
+    setIsSubmitting(true);
 
-  const result = await saveRepository({ ...formState });
-  if (result.ok) resetForm();
-  setIsSubmitting(false);
-};
+    const result = await saveRepository({ ...formState }).catch(
+      (err: unknown) => {
+        const errorMessage =
+          err instanceof Error ? err.message : "リポジトリの保存に失敗しました";
+        setSubmitError(errorMessage);
+        return { ok: false };
+      }
+    );
+
+    if (result.ok) {
+      resetForm();
+    }
+    setIsSubmitting(false);
+  };
 
 const useRepositoryForm = () => {
   const state = useFormState();
   const saveRepository = useSetAtom(saveRepositoryAtom);
-  const repositoryError = useAtomValue(repositoryErrorAtom);
 
   const handleSelectDirectory = async () => {
     const path = await selectDirectory();
@@ -178,6 +213,7 @@ const useRepositoryForm = () => {
   const handleSubmit = createSubmitHandler({
     formState: state.formState,
     setValidationError: state.setValidationError,
+    setSubmitError: state.setSubmitError,
     setIsSubmitting: state.setIsSubmitting,
     saveRepository,
     resetForm: state.resetForm,
@@ -187,7 +223,7 @@ const useRepositoryForm = () => {
     formState: state.formState,
     isSubmitting: state.isSubmitting,
     validationError: state.validationError,
-    repositoryError,
+    submitError: state.submitError,
     isFormValid: isFormValid(state.formState),
     handleInputChange: state.handleInputChange,
     handleSelectDirectory,
@@ -210,13 +246,17 @@ const FormFields = ({
     <TextInput
       label="オーナー"
       value={formState.owner}
-      onChange={(v) => { handleInputChange("owner", v); }}
+      onChange={(v) => {
+        handleInputChange("owner", v);
+      }}
       placeholder="organization or username"
     />
     <TextInput
       label="リポジトリ名"
       value={formState.name}
-      onChange={(v) => { handleInputChange("name", v); }}
+      onChange={(v) => {
+        handleInputChange("name", v);
+      }}
       placeholder="repository-name"
     />
     <DirectoryInput
@@ -228,14 +268,18 @@ const FormFields = ({
     <TextInput
       label="デフォルトブランチ"
       value={formState.default_branch}
-      onChange={(v) => { handleInputChange("default_branch", v); }}
+      onChange={(v) => {
+        handleInputChange("default_branch", v);
+      }}
       placeholder="main"
     />
     <CheckboxInput
       id="is_private"
       label="プライベートリポジトリ"
       checked={formState.is_private}
-      onChange={(v) => { handleInputChange("is_private", v); }}
+      onChange={(v) => {
+        handleInputChange("is_private", v);
+      }}
     />
   </>
 );
@@ -245,7 +289,7 @@ export const RepositoryForm = () => {
     formState,
     isSubmitting,
     validationError,
-    repositoryError,
+    submitError,
     isFormValid: formValid,
     handleInputChange,
     handleSelectDirectory,
@@ -264,8 +308,8 @@ export const RepositoryForm = () => {
         <p className="text-sm text-red-500">{validationError}</p>
       )}
 
-      {repositoryError !== undefined && (
-        <p className="text-sm text-red-500">{repositoryError}</p>
+      {submitError !== undefined && (
+        <p className="text-sm text-red-500">{submitError}</p>
       )}
 
       <button

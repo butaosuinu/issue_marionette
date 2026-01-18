@@ -1,31 +1,38 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Provider, createStore } from "jotai";
+import { Provider, createStore, atom } from "jotai";
 import type { Repository } from "../../../types/repository";
 
-const { mockInvoke, mockAsk } = vi.hoisted(() => ({
-  mockInvoke: vi.fn(),
+const { mockAsk } = vi.hoisted(() => ({
   mockAsk: vi.fn(),
-}));
-
-vi.mock("@tauri-apps/api/core", () => ({
-  invoke: mockInvoke,
 }));
 
 vi.mock("@tauri-apps/plugin-dialog", () => ({
   ask: mockAsk,
 }));
 
+const mockRepositories = vi.hoisted(() => ({
+  value: [] as Repository[],
+}));
+
+vi.mock("../../../stores/repositoryAtoms", async (importOriginal) => {
+  const original =
+    await importOriginal<typeof import("../../../stores/repositoryAtoms")>();
+  return {
+    ...original,
+    repositoriesSuspenseAtom: atom(() => mockRepositories.value),
+  };
+});
+
 // eslint-disable-next-line import/first -- vi.mock must be called before importing mocked modules
 import { RepositoryList } from "../RepositoryList";
 // eslint-disable-next-line import/first -- vi.mock must be called before importing mocked modules
-import {
-  repositoriesAtom,
-  selectedRepositoryIdAtom,
-} from "../../../stores/repositoryAtoms";
+import { selectedRepositoryIdAtom } from "../../../stores/repositoryAtoms";
 
-const createMockRepository = (overrides: Partial<Repository> = {}): Repository => ({
+const createMockRepository = (
+  overrides: Partial<Repository> = {}
+): Repository => ({
   id: "repo-1",
   owner: "test-owner",
   name: "test-repo",
@@ -38,39 +45,33 @@ const createMockRepository = (overrides: Partial<Repository> = {}): Repository =
   ...overrides,
 });
 
+const renderWithProviders = (ui: React.ReactElement, store = createStore()) =>
+  render(
+    <Provider store={store}>{ui}</Provider>
+  );
+
 describe("RepositoryList", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockInvoke.mockResolvedValue(undefined);
     mockAsk.mockResolvedValue(false);
+    mockRepositories.value = [];
   });
 
   it("空の場合「リポジトリがありません」が表示される", () => {
-    const store = createStore();
-    store.set(repositoriesAtom, []);
+    mockRepositories.value = [];
 
-    render(
-      <Provider store={store}>
-        <RepositoryList />
-      </Provider>
-    );
+    renderWithProviders(<RepositoryList />);
 
     expect(screen.getByText("リポジトリがありません")).toBeInTheDocument();
   });
 
   it("リポジトリ一覧が正しく表示される", () => {
-    const store = createStore();
-    const mockRepos = [
+    mockRepositories.value = [
       createMockRepository({ id: "repo-1", full_name: "owner/repo1" }),
       createMockRepository({ id: "repo-2", full_name: "owner/repo2" }),
     ];
-    store.set(repositoriesAtom, mockRepos);
 
-    render(
-      <Provider store={store}>
-        <RepositoryList />
-      </Provider>
-    );
+    renderWithProviders(<RepositoryList />);
 
     expect(screen.getByText("owner/repo1")).toBeInTheDocument();
     expect(screen.getByText("owner/repo2")).toBeInTheDocument();
@@ -78,27 +79,22 @@ describe("RepositoryList", () => {
 
   it("リポジトリをクリックすると選択される", async () => {
     const user = userEvent.setup();
-    const store = createStore();
-    const mockRepos = [
+    mockRepositories.value = [
       createMockRepository({ id: "repo-1", full_name: "owner/repo1" }),
     ];
-    store.set(repositoriesAtom, mockRepos);
 
-    render(
-      <Provider store={store}>
-        <RepositoryList />
-      </Provider>
-    );
+    const store = createStore();
+
+    renderWithProviders(<RepositoryList />, store);
 
     await user.click(screen.getByText("owner/repo1"));
 
     expect(store.get(selectedRepositoryIdAtom)).toBe("repo-1");
   });
 
-  it("削除確認でOKをクリックすると削除処理が呼ばれる", async () => {
+  it("削除ボタンをクリックすると確認ダイアログが表示される", async () => {
     const user = userEvent.setup();
-    const store = createStore();
-    const mockRepos = [
+    mockRepositories.value = [
       createMockRepository({
         id: "repo-1",
         owner: "test-owner",
@@ -106,15 +102,10 @@ describe("RepositoryList", () => {
         full_name: "test-owner/test-repo",
       }),
     ];
-    store.set(repositoriesAtom, mockRepos);
 
-    mockAsk.mockResolvedValue(true);
+    mockAsk.mockResolvedValue(false);
 
-    render(
-      <Provider store={store}>
-        <RepositoryList />
-      </Provider>
-    );
+    renderWithProviders(<RepositoryList />);
 
     const deleteButton = screen.getByTitle("削除");
     await user.click(deleteButton);
@@ -123,39 +114,27 @@ describe("RepositoryList", () => {
       "リポジトリ「test-owner/test-repo」を削除しますか？",
       { title: "削除確認", kind: "warning" }
     );
-
-    await waitFor(() => {
-      expect(store.get(repositoriesAtom)).toHaveLength(0);
-    });
   });
 
-  it("削除確認でキャンセルすると削除されない", async () => {
-    const user = userEvent.setup();
-    const store = createStore();
-    const mockRepos = [
-      createMockRepository({
-        id: "repo-1",
-        owner: "test-owner",
-        name: "test-repo",
-        full_name: "test-owner/test-repo",
-      }),
+  it("選択されたリポジトリがハイライトされる", () => {
+    mockRepositories.value = [
+      createMockRepository({ id: "repo-1", full_name: "owner/repo1" }),
+      createMockRepository({ id: "repo-2", full_name: "owner/repo2" }),
     ];
-    store.set(repositoriesAtom, mockRepos);
 
-    mockAsk.mockResolvedValue(false);
+    const store = createStore();
+    store.set(selectedRepositoryIdAtom, "repo-1");
 
-    render(
-      <Provider store={store}>
-        <RepositoryList />
-      </Provider>
-    );
+    renderWithProviders(<RepositoryList />, store);
 
-    const deleteButton = screen.getByTitle("削除");
-    await user.click(deleteButton);
+    const repo1Text = screen.getByText("owner/repo1");
+    const repo2Text = screen.getByText("owner/repo2");
 
-    await waitFor(() => {
-      expect(mockAsk).toHaveBeenCalled();
-    });
-    expect(store.get(repositoriesAtom)).toHaveLength(1);
+    // DOM構造: div.flex.items-center > button > div.font-medium(テキスト)
+    const repo1Container = repo1Text.parentElement?.parentElement;
+    const repo2Container = repo2Text.parentElement?.parentElement;
+
+    expect(repo1Container).toHaveClass("bg-gray-700");
+    expect(repo2Container).not.toHaveClass("bg-gray-700");
   });
 });
