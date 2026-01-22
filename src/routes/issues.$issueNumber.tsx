@@ -43,7 +43,7 @@ function IssueDetailPage() {
     const worktreeForIssue = worktrees.find(
       (w) => w.issue_number === issueNumberInt
     );
-    if (worktreeForIssue !== undefined && activeWorktree === undefined) {
+    if (worktreeForIssue !== undefined && activeWorktree?.id !== worktreeForIssue.id) {
       setActiveWorktree(worktreeForIssue.id);
     }
   }, [worktrees, issueNumberInt, activeWorktree, setActiveWorktree]);

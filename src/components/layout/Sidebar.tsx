@@ -12,7 +12,7 @@ export const Sidebar = () => {
   const worktrees = useAtomValue(worktreesAtom);
 
   const sessionsWithIssue = runningSessions.map((session) => {
-    const worktree = worktrees.find((w) => w.path === session.worktree_id);
+    const worktree = worktrees.find((w) => w.path === session.worktree_path);
     return {
       session,
       issueNumber: worktree?.issue_number,

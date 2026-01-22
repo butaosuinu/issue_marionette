@@ -6,8 +6,8 @@ type AgentControlPanelProps = {
   worktreePath: string | undefined;
   isAgentRunning: boolean;
   agentStatus: AgentStatus | undefined;
-  onStart: (params: { mode: AgentMode }) => void;
-  onStop: () => void;
+  onStart: (params: { mode: AgentMode }) => void | Promise<void>;
+  onStop: () => void | Promise<void>;
 };
 
 const STATUS_COLORS: Record<AgentStatus, string> = {
@@ -28,8 +28,12 @@ export const AgentControlPanel = ({
   const [selectedMode, setSelectedMode] = useState<AgentMode>(AGENT_MODE.ACT);
 
   const handleStart = useCallback(() => {
-    onStart({ mode: selectedMode });
+    void onStart({ mode: selectedMode });
   }, [onStart, selectedMode]);
+
+  const handleStop = useCallback(() => {
+    void onStop();
+  }, [onStop]);
 
   const handleModeChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -64,7 +68,7 @@ export const AgentControlPanel = ({
       {isAgentRunning ? (
         <button
           type="button"
-          onClick={onStop}
+          onClick={handleStop}
           className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
         >
           停止

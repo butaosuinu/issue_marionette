@@ -9,7 +9,7 @@ export type AgentStatus =
 
 export type AgentSession = {
   id: string;
-  worktree_id: string;
+  worktree_path: string;
   mode: AgentMode;
   status: AgentStatus;
   started_at: string;

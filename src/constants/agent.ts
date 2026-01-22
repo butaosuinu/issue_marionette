@@ -36,6 +36,6 @@ export const AGENT_MODE_LABELS = Object.freeze({
 }) satisfies Readonly<Record<AgentMode, string>>;
 
 export const AGENT_EVENTS = Object.freeze({
-  OUTPUT: "agent-output",
-  STATUS_CHANGED: "agent-status-changed",
+  OUTPUT: "agent-output" as const,
+  STATUS_CHANGED: "agent-status-changed" as const,
 });
