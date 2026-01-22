@@ -20,7 +20,7 @@ pub enum AgentStatus {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AgentSession {
     pub id: String,
-    pub worktree_id: String,
+    pub worktree_path: String,
     pub mode: AgentMode,
     pub status: AgentStatus,
     pub started_at: String,

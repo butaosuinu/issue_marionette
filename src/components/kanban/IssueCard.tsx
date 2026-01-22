@@ -1,5 +1,7 @@
+import { useCallback } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useNavigate } from "@tanstack/react-router";
 import type { Issue } from "../../types/kanban";
 import {
   ARRAY_INDEX,
@@ -14,6 +16,8 @@ type Props = {
 };
 
 export const IssueCard = ({ issue, columnId }: Props) => {
+  const navigate = useNavigate();
+
   const {
     attributes,
     listeners,
@@ -39,6 +43,17 @@ export const IssueCard = ({ issue, columnId }: Props) => {
   };
 
   const priorityColor = PRIORITY_COLORS[issue.priority];
+
+  const handleOpenDetail = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation();
+      void navigate({
+        to: "/issues/$issueNumber",
+        params: { issueNumber: String(issue.number) },
+      });
+    },
+    [navigate, issue.number]
+  );
 
   return (
     <div
@@ -83,9 +98,21 @@ export const IssueCard = ({ issue, columnId }: Props) => {
         </div>
       )}
 
-      {issue.assignee !== undefined && (
-        <div className="mt-2 text-xs text-gray-500">{issue.assignee}</div>
-      )}
+      <div className="mt-2 flex items-center justify-between">
+        {issue.assignee !== undefined && (
+          <span className="text-xs text-gray-500">{issue.assignee}</span>
+        )}
+        <button
+          type="button"
+          onClick={handleOpenDetail}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+          }}
+          className="ml-auto rounded bg-gray-700 px-2 py-1 text-xs text-gray-300 hover:bg-gray-600 hover:text-gray-100"
+        >
+          詳細
+        </button>
+      </div>
     </div>
   );
 };

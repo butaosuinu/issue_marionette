@@ -76,7 +76,7 @@ impl AgentManager {
 
         let mut session = AgentSession {
             id: session_id.clone(),
-            worktree_id: worktree_path.clone(),
+            worktree_path: worktree_path.clone(),
             mode,
             status: AgentStatus::Starting,
             started_at: Utc::now().to_rfc3339(),
