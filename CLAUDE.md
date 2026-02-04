@@ -17,8 +17,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - lsmcpが使えない場合の代替手段
   - **ファイル単位での型チェックを実行すること**
   - 全体型チェックよりも、作業対象ファイルの型チェックを優先する
-  - ファイル単位での実行コマンド: `npx tsc --noEmit path/to/file.ts` または `npx tsc --noEmit path/to/file.tsx`
-  - プロジェクト全体の型チェック: `pnpm build` （必要な場合のみ使用）
+  - ファイル単位での実行コマンド: `npx tsc-files --noEmit path/to/file.ts` または `npx tsc-files --noEmit path/to/file.tsx`
+  - プロジェクト全体の型チェック: `pnpm typecheck` または `pnpm build`
+
+#### 注意事項
+- `npx tsc --noEmit path/to/file.ts` は使用禁止（tsconfig.json設定が無視されるため）
+- ファイル単位の型チェックには必ず `tsc-files` を使用すること
 
 ### Linting (OxLint + ESLint)
 
