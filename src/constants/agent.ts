@@ -2,24 +2,24 @@ import type { AgentMode, AgentStatus } from "../types/agent";
 import type { WorktreeStatus } from "../types/worktree";
 
 export const AGENT_MODE = Object.freeze({
-  PLAN: "plan" as const,
-  ACT: "act" as const,
+  PLAN: "plan",
+  ACT: "act",
 }) satisfies Readonly<Record<string, AgentMode>>;
 
 export const AGENT_STATUS = Object.freeze({
-  STARTING: "starting" as const,
-  RUNNING: "running" as const,
-  WAITING: "waiting" as const,
-  COMPLETED: "completed" as const,
-  ERROR: "error" as const,
+  STARTING: "starting",
+  RUNNING: "running",
+  WAITING: "waiting",
+  COMPLETED: "completed",
+  ERROR: "error",
 }) satisfies Readonly<Record<string, AgentStatus>>;
 
 export const WORKTREE_STATUS = Object.freeze({
-  CREATING: "creating" as const,
-  READY: "ready" as const,
-  WORKING: "working" as const,
-  REVIEWING: "reviewing" as const,
-  MERGED: "merged" as const,
+  CREATING: "creating",
+  READY: "ready",
+  WORKING: "working",
+  REVIEWING: "reviewing",
+  MERGED: "merged",
 }) satisfies Readonly<Record<string, WorktreeStatus>>;
 
 export const AGENT_STATUS_LABELS = Object.freeze({
