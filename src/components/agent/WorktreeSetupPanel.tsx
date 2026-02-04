@@ -14,11 +14,12 @@ type WorktreeSetupPanelProps = {
 };
 
 const generateDefaultBranchName = (issueNumber: number, issueTitle: string): string => {
-  const sanitizedTitle = issueTitle
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .slice(0, BRANCH_NAME_MAX_LENGTH);
+  const sanitizedTitle =
+    issueTitle
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .slice(0, BRANCH_NAME_MAX_LENGTH) || "work";
   return `feature/issue-${issueNumber}-${sanitizedTitle}`;
 };
 
