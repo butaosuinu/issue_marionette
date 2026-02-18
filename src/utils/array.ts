@@ -5,8 +5,8 @@ export const arrayMove = <T>(
   from: number,
   to: number
 ): T[] => {
-  const newArray = [...array];
-  const [removed] = newArray.splice(from, ARRAY_INDEX.INCREMENT);
-  newArray.splice(to, ARRAY_INDEX.FIRST, removed);
-  return newArray;
+  const removed = array[from];
+  return array
+    .toSpliced(from, ARRAY_INDEX.INCREMENT)
+    .toSpliced(to, ARRAY_INDEX.FIRST, removed);
 };

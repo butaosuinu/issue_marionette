@@ -51,11 +51,14 @@ export const saveRepositoryAtom = atom(
       updated_at: now,
     };
 
-    const result: SaveResult = await invoke("save_repository", {
+    const invokeResult = await invoke("save_repository", {
       repository: newRepository,
-    })
-      .then(() => ({ ok: true as const, repository: newRepository }))
-      .catch((err: unknown) => ({ ok: false as const, error: err }));
+    }).catch((err: unknown) => err);
+
+    const result: SaveResult =
+      invokeResult instanceof Error || typeof invokeResult === "string"
+        ? { ok: false as const, error: invokeResult }
+        : { ok: true as const, repository: newRepository };
 
     if (!result.ok) {
       const errorMessage =
@@ -75,11 +78,14 @@ type DeleteResult = { ok: true } | { ok: false; error: unknown };
 export const deleteRepositoryAtom = atom(
   null,
   async (get, set, repoId: string) => {
-    const result: DeleteResult = await invoke("delete_repository", {
+    const invokeResult = await invoke("delete_repository", {
       id: repoId,
-    })
-      .then(() => ({ ok: true as const }))
-      .catch((err: unknown) => ({ ok: false as const, error: err }));
+    }).catch((err: unknown) => err);
+
+    const result: DeleteResult =
+      invokeResult instanceof Error || typeof invokeResult === "string"
+        ? { ok: false as const, error: invokeResult }
+        : { ok: true as const };
 
     if (!result.ok) {
       const errorMessage =

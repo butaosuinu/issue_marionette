@@ -1,5 +1,10 @@
 import type { FileDiff, FileTreeNode, FileChangeStatus } from "../types/diff";
-import { FILE_CHANGE_STATUS, SORT_ORDER, SLICE_INDEX } from "../constants/diff";
+import {
+  FILE_CHANGE_STATUS,
+  SORT_ORDER,
+  SLICE_INDEX,
+  ARRAY_POSITION,
+} from "../constants/diff";
 
 type BuildFileTreeParams = {
   files: FileDiff[];
@@ -33,7 +38,7 @@ const LANGUAGE_EXTENSIONS: Readonly<Record<string, string>> = Object.freeze({
 });
 
 export const getFileLanguage = ({ filePath }: GetFileLanguageParams): string => {
-  const extension = filePath.split(".").pop()?.toLowerCase();
+  const extension = filePath.split(".").at(ARRAY_POSITION.LAST)?.toLowerCase();
   if (extension === undefined) {
     return "plaintext";
   }
@@ -60,6 +65,7 @@ type ProcessFileParams = {
   nodeMap: Map<string, FileTreeNode>;
 };
 
+/* eslint-disable functional/immutable-data -- ツリー構築アルゴリズムのため意図的なミューテーション */
 const processFile = ({ file, root, nodeMap }: ProcessFileParams): void => {
   const parts = file.path.split("/");
   const fileName = parts.pop();
@@ -113,6 +119,7 @@ const processFile = ({ file, root, nodeMap }: ProcessFileParams): void => {
     }
   }
 };
+/* eslint-enable functional/immutable-data */
 
 export const buildFileTree = ({ files }: BuildFileTreeParams): FileTreeNode[] => {
   if (files.length === 0) {

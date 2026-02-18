@@ -56,3 +56,7 @@ export const SORT_ORDER = Object.freeze({
 export const SLICE_INDEX = Object.freeze({
   EXCLUDE_LAST: -1,
 });
+
+export const ARRAY_POSITION = Object.freeze({
+  LAST: -1,
+});
