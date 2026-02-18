@@ -336,6 +336,100 @@ const { total, tax } = calculateTax({
   - `Promise.then().catch()`の使用禁止
   - `try/catch`の使用禁止
 
+### React Suspense パターン
+
+非同期データ取得には React Suspense と ErrorBoundary を使用し、手動のローディング/エラー状態管理を避ける。
+
+#### 基本構造
+
+```tsx
+// レイアウトコンポーネントで Suspense と ErrorBoundary をラップ
+<ErrorBoundary fallback={ErrorFallback}>
+  <Suspense fallback={<LoadingState />}>
+    <DataComponent />
+  </Suspense>
+</ErrorBoundary>
+```
+
+#### Jotai での Suspense 対応 atom
+
+```typescript
+// Suspense 対応の非同期 atom
+export const dataSuspenseAtom = atom(async (get) => {
+  const result = await invoke<Data[]>("load_data").catch((err: unknown) => {
+    throw err instanceof Error ? err : new Error("データの読み込みに失敗しました");
+  });
+  return result;
+});
+
+// リフレッシュ用パターン
+const refreshTriggerAtom = atom(0);
+
+export const dataWithRefreshAtom = atom(async (get) => {
+  get(refreshTriggerAtom); // 依存関係を作成
+  return await invoke<Data[]>("load_data");
+});
+
+export const refreshDataAtom = atom(null, (_get, set) => {
+  set(refreshTriggerAtom, (prev) => prev + 1);
+});
+```
+
+#### コンポーネントでの使用
+
+```tsx
+// ローディング/エラー状態の条件分岐は不要
+const DataList = () => {
+  const data = useAtomValue(dataSuspenseAtom); // Suspense が自動でローディング処理
+
+  if (data.length === 0) {
+    return <EmptyState />;
+  }
+
+  return <List items={data} />;
+};
+```
+
+#### ErrorBoundary の実装
+
+- React の制約によりクラスコンポーネントで実装（`getDerivedStateFromError` が必要）
+- `src/components/error/ErrorBoundary.tsx` を参照
+
+#### テストでの Suspense atom のモック
+
+Suspense 対応 atom はテスト環境で非同期解決が難しいため、同期的な atom でモックする。
+
+```typescript
+const mockData = vi.hoisted(() => ({
+  value: [] as Data[],
+}));
+
+vi.mock("../stores/dataAtoms", async () => {
+  const original = await vi.importActual("../stores/dataAtoms");
+  return {
+    ...original,
+    dataSuspenseAtom: atom(() => mockData.value), // 同期的な atom でモック
+  };
+});
+
+// テスト内で値を設定
+beforeEach(() => {
+  mockData.value = [];
+});
+
+it("データが表示される", () => {
+  mockData.value = [{ id: "1", name: "Test" }];
+  render(<DataList />);
+  expect(screen.getByText("Test")).toBeInTheDocument();
+});
+```
+
+#### 禁止事項
+
+- コンポーネント内での `isLoading` / `error` 状態管理
+- `useEffect` 内でのデータ取得と状態更新
+- ローディング/エラーの条件分岐による表示切り替え
+
 ```typescript
 // 良い例 - await/catchパターン
 const fetchUserData = async (id: string) => {

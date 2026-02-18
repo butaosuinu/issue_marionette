@@ -38,8 +38,6 @@ export const MONACO_DIFF_OPTIONS = Object.freeze({
 });
 
 export const DEFAULT_DIFF_STATE: DiffState = Object.freeze({
-  isLoading: false,
-  error: undefined,
   files: [],
   selectedFilePath: undefined,
   viewMode: DIFF_VIEW_MODE.SIDE_BY_SIDE,
