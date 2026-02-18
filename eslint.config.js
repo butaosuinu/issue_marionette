@@ -1,6 +1,7 @@
 import love from 'eslint-config-love'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
+import functional from 'eslint-plugin-functional'
 import oxlint from 'eslint-plugin-oxlint'
 
 export default [
@@ -29,6 +30,7 @@ export default [
       ...love.plugins,
       react,
       'react-hooks': reactHooks,
+      functional,
     },
     rules: {
       ...love.rules,
@@ -73,6 +75,22 @@ export default [
         },
       ],
       complexity: ['error', { max: 15 }],
+      'functional/no-let': 'error',
+      'functional/immutable-data': [
+        'error',
+        {
+          ignoreImmediateMutation: true,
+          ignoreAccessorPattern: '**.current',
+        },
+      ],
+      'functional/no-loop-statements': 'error',
+      'functional/no-throw-statements': [
+        'error',
+        {
+          allowToRejectPromises: true,
+        },
+      ],
+      'functional/no-try-statements': 'error',
     },
   },
   {
@@ -85,6 +103,7 @@ export default [
     files: ['src/mocks/**/*.ts'],
     rules: {
       '@typescript-eslint/no-magic-numbers': 'off',
+      'functional/immutable-data': 'off',
     },
   },
   {
@@ -100,6 +119,8 @@ export default [
       '@typescript-eslint/no-magic-numbers': 'off',
       'max-lines-per-function': 'off',
       'unicorn/no-useless-undefined': 'off',
+      'functional/no-throw-statements': 'off',
+      'functional/immutable-data': 'off',
     },
   },
 ]

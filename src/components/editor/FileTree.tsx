@@ -89,19 +89,15 @@ const TreeNode = ({
   );
 };
 
-const collectAllDirectoryPaths = (nodes: FileTreeNode[]): Set<string> => {
-  const paths = new Set<string>();
-  const traverse = (nodeList: FileTreeNode[]) => {
-    nodeList.forEach((node) => {
-      if (node.type === "directory") {
-        paths.add(node.path);
-        traverse(node.children);
-      }
-    });
-  };
-  traverse(nodes);
-  return paths;
-};
+const collectDirectoryPaths = (nodes: FileTreeNode[]): string[] =>
+  nodes.flatMap((node) =>
+    node.type === "directory"
+      ? [node.path, ...collectDirectoryPaths(node.children)]
+      : [],
+  );
+
+const collectAllDirectoryPaths = (nodes: FileTreeNode[]): Set<string> =>
+  new Set(collectDirectoryPaths(nodes));
 
 type UseExpandedPathsReturn = {
   expandedPaths: Set<string>;
@@ -118,24 +114,18 @@ const useExpandedPaths = (nodes: FileTreeNode[]): UseExpandedPathsReturn => {
     () => new Set()
   );
 
-  const expandedPaths = useMemo(() => {
-    const expanded = new Set(allDirectoryPaths);
-    collapsedPaths.forEach((p) => {
-      expanded.delete(p);
-    });
-    return expanded;
-  }, [allDirectoryPaths, collapsedPaths]);
+  const expandedPaths = useMemo(
+    () =>
+      new Set([...allDirectoryPaths].filter((p) => !collapsedPaths.has(p))),
+    [allDirectoryPaths, collapsedPaths],
+  );
 
   const toggleExpand = useCallback(({ path }: { path: string }) => {
-    setCollapsedPaths((prev) => {
-      const next = new Set(prev);
-      if (next.has(path)) {
-        next.delete(path);
-      } else {
-        next.add(path);
-      }
-      return next;
-    });
+    setCollapsedPaths((prev) =>
+      prev.has(path)
+        ? new Set([...prev].filter((p) => p !== path))
+        : new Set([...prev, path]),
+    );
   }, []);
 
   return { expandedPaths, toggleExpand };

@@ -48,14 +48,16 @@ export const moveIssueAtom = atom(
       (id) => id !== issueId
     );
 
-    const targetIssues = [...(issuesByColumn[targetColumnId] ?? [])];
-    if (sourceColumnId === targetColumnId) {
-      const currentIndex = targetIssues.indexOf(issueId);
-      if (currentIndex !== ARRAY_INDEX.NOT_FOUND) {
-        targetIssues.splice(currentIndex, ARRAY_INDEX.INCREMENT);
-      }
-    }
-    targetIssues.splice(targetIndex, ARRAY_INDEX.FIRST, issueId);
+    const baseTargetIssues = issuesByColumn[targetColumnId] ?? [];
+    const filteredTargetIssues =
+      sourceColumnId === targetColumnId
+        ? baseTargetIssues.filter((id) => id !== issueId)
+        : baseTargetIssues;
+    const targetIssues = filteredTargetIssues.toSpliced(
+      targetIndex,
+      ARRAY_INDEX.FIRST,
+      issueId,
+    );
 
     set(issuesByColumnAtom, {
       ...issuesByColumn,

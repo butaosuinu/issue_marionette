@@ -58,6 +58,7 @@
     "autoprefixer": "^10.4.20",
     "eslint": "^9.39.2",
     "eslint-config-love": "^140.0.0",
+    "eslint-plugin-functional": "^9.0.2",
     "eslint-plugin-oxlint": "^1.37.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
