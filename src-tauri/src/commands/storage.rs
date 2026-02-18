@@ -1,20 +1,18 @@
 use crate::models::Repository;
-use tauri::command;
+use crate::services::RepositoryStore;
+use tauri::{command, AppHandle};
 
 #[command]
-pub async fn save_repository(_repository: Repository) -> Result<(), String> {
-    // TODO: Implement repository save
-    Ok(())
+pub async fn save_repository(app: AppHandle, repository: Repository) -> Result<(), String> {
+    RepositoryStore::save(&app, repository)
 }
 
 #[command]
-pub async fn load_repositories() -> Result<Vec<Repository>, String> {
-    // TODO: Implement repository load
-    Ok(vec![])
+pub async fn load_repositories(app: AppHandle) -> Result<Vec<Repository>, String> {
+    RepositoryStore::load_all(&app)
 }
 
 #[command]
-pub async fn delete_repository(_repo_id: String) -> Result<(), String> {
-    // TODO: Implement repository delete
-    Ok(())
+pub async fn delete_repository(app: AppHandle, id: String) -> Result<(), String> {
+    RepositoryStore::delete(&app, &id)
 }
