@@ -13,7 +13,7 @@ import {
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { sortedColumnsAtom, issuesByColumnAtom, reorderColumnsAtom } from "../../stores/kanbanAtoms";
-import { issuesMapAtom, moveIssueAtom, reorderIssueAtom, initializeIssuesAtom } from "../../stores/issueAtoms";
+import { issuesMapAtom, moveIssueAtom, reorderIssueAtom, initializeIssuesAtom, githubIssuesSuspenseAtom } from "../../stores/issueAtoms";
 import { KanbanColumn } from "./KanbanColumn";
 import { ColumnSettings } from "./ColumnSettings";
 import { IssueCard } from "./IssueCard";
@@ -38,6 +38,7 @@ export const KanbanBoard = () => {
   const moveIssue = useSetAtom(moveIssueAtom);
   const reorderIssue = useSetAtom(reorderIssueAtom);
   const reorderColumns = useSetAtom(reorderColumnsAtom);
+  const githubIssues = useAtomValue(githubIssuesSuspenseAtom);
   const initializeIssues = useSetAtom(initializeIssuesAtom);
 
   const [activeId, setActiveId] = useState<UniqueIdentifier | undefined>(
@@ -48,12 +49,8 @@ export const KanbanBoard = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
-    if (import.meta.env.DEV) {
-      void import("../../mocks/kanbanData").then(({ MOCK_ISSUES }) => {
-        initializeIssues(MOCK_ISSUES);
-      });
-    }
-  }, [initializeIssues]);
+    initializeIssues(githubIssues);
+  }, [githubIssues, initializeIssues]);
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id);
