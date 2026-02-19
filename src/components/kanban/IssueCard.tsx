@@ -9,6 +9,8 @@ import {
   PRIORITY_COLORS,
   STYLE_VALUES,
 } from "../../constants/kanban";
+import { Button } from "../ui/Button";
+import { StatusDot } from "../ui/StatusDot";
 
 type Props = {
   issue: Issue;
@@ -65,11 +67,7 @@ export const IssueCard = ({ issue, columnId }: Props) => {
     >
       <div className="flex items-start justify-between gap-2">
         <span className="text-xs text-gray-500">#{issue.number}</span>
-        <div
-          className="h-2 w-2 shrink-0 rounded-full"
-          style={{ backgroundColor: priorityColor }}
-          title={issue.priority}
-        />
+        <StatusDot color={priorityColor} title={issue.priority} />
       </div>
 
       <h4 className="mt-1 line-clamp-2 text-sm font-medium text-gray-100">
@@ -102,16 +100,17 @@ export const IssueCard = ({ issue, columnId }: Props) => {
         {issue.assignee !== undefined && (
           <span className="text-xs text-gray-500">{issue.assignee}</span>
         )}
-        <button
-          type="button"
+        <Button
+          variant="secondary"
+          size="sm"
+          className="ml-auto hover:text-gray-100"
           onClick={handleOpenDetail}
           onPointerDown={(e) => {
             e.stopPropagation();
           }}
-          className="ml-auto rounded bg-gray-700 px-2 py-1 text-xs text-gray-300 hover:bg-gray-600 hover:text-gray-100"
         >
           詳細
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 import { useCallback, useState } from "react";
 import type { AgentMode, AgentStatus } from "../../types/agent";
 import { AGENT_MODE, AGENT_MODE_LABELS, AGENT_STATUS_LABELS } from "../../constants/agent";
+import { Button } from "../ui/Button";
+import { StatusDot } from "../ui/StatusDot";
 
 type AgentControlPanelProps = {
   worktreePath: string | undefined;
@@ -11,11 +13,11 @@ type AgentControlPanelProps = {
 };
 
 const STATUS_COLORS: Record<AgentStatus, string> = {
-  starting: "bg-yellow-500",
-  running: "bg-green-500",
-  waiting: "bg-blue-500",
-  completed: "bg-gray-500",
-  error: "bg-red-500",
+  starting: "#eab308",
+  running: "#22c55e",
+  waiting: "#3b82f6",
+  completed: "#6b7280",
+  error: "#ef4444",
 };
 
 export const AgentControlPanel = ({
@@ -66,27 +68,18 @@ export const AgentControlPanel = ({
       </div>
 
       {isAgentRunning ? (
-        <button
-          type="button"
-          onClick={handleStop}
-          className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-        >
+        <Button variant="danger" onClick={handleStop}>
           停止
-        </button>
+        </Button>
       ) : (
-        <button
-          type="button"
-          onClick={handleStart}
-          disabled={isStartDisabled}
-          className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
+        <Button onClick={handleStart} disabled={isStartDisabled}>
           Agent 起動
-        </button>
+        </Button>
       )}
 
       {agentStatus !== undefined && (
         <div className="flex items-center gap-2">
-          <div className={`h-2 w-2 rounded-full ${STATUS_COLORS[agentStatus]}`} />
+          <StatusDot color={STATUS_COLORS[agentStatus]} />
           <span className="text-sm text-gray-300">
             {AGENT_STATUS_LABELS[agentStatus]}
           </span>

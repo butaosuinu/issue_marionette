@@ -6,6 +6,7 @@ import {
   deleteRepositoryAtom,
 } from "../../stores/repositoryAtoms";
 import type { Repository } from "../../types/repository";
+import { Button } from "../ui/Button";
 
 type RepositoryItemProps = {
   repository: Repository;
@@ -49,14 +50,15 @@ const RepositoryItem = ({
           {repository.local_path}
         </div>
       </button>
-      <button
+      <Button
+        variant="ghost"
+        className="ml-2 p-1 text-gray-500 hover:bg-gray-600 hover:text-red-400"
         onClick={handleDelete}
-        className="ml-2 rounded p-1 text-gray-500 hover:bg-gray-600 hover:text-red-400"
         title="削除"
         aria-label={`${repository.name}を削除`}
       >
         ×
-      </button>
+      </Button>
     </div>
   );
 };

@@ -1,5 +1,7 @@
 import { useCallback, useState } from "react";
 import type { Worktree } from "../../types/worktree";
+import { Button } from "../ui/Button";
+import { TextInput } from "../ui/TextInput";
 
 const BRANCH_NAME_MAX_LENGTH = 30;
 
@@ -47,8 +49,8 @@ export const WorktreeSetupPanel = ({
   }, [branchName, onCreateWorktree]);
 
   const handleBranchNameChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setBranchName(event.target.value);
+    (value: string) => {
+      setBranchName(value);
     },
     []
   );
@@ -78,13 +80,9 @@ export const WorktreeSetupPanel = ({
             {issueWorktree.branch_name}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={handleSelectExisting}
-          className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-        >
+        <Button onClick={handleSelectExisting}>
           このWorktreeを使用
-        </button>
+        </Button>
       </div>
     );
   }
@@ -99,18 +97,11 @@ export const WorktreeSetupPanel = ({
       </p>
 
       <div className="mb-3">
-        <label
-          htmlFor="branch-name"
-          className="mb-1 block text-sm text-gray-400"
-        >
-          ブランチ名:
-        </label>
-        <input
+        <TextInput
+          label="ブランチ名:"
           id="branch-name"
-          type="text"
           value={branchName}
           onChange={handleBranchNameChange}
-          className="w-full rounded border border-gray-600 bg-gray-900 px-3 py-2 text-sm text-gray-200"
           placeholder="feature/issue-123-description"
         />
       </div>
@@ -119,14 +110,13 @@ export const WorktreeSetupPanel = ({
         <p>リポジトリ: {repoPath}</p>
       </div>
 
-      <button
-        type="button"
+      <Button
+        variant="success"
         onClick={handleCreate}
         disabled={isLoading || branchName.trim() === ""}
-        className="rounded bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isLoading ? "作成中..." : "Worktreeを作成"}
-      </button>
+      </Button>
     </div>
   );
 };

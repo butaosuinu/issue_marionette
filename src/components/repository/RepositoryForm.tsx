@@ -3,6 +3,8 @@ import { useSetAtom } from "jotai";
 import { open } from "@tauri-apps/plugin-dialog";
 import { saveRepositoryAtom } from "../../stores/repositoryAtoms";
 import type { RepositoryFormData } from "../../types/repository";
+import { Button } from "../ui/Button";
+import { TextInput } from "../ui/TextInput";
 
 type FormState = {
   owner: string;
@@ -20,34 +22,14 @@ const INITIAL_FORM_STATE: FormState = {
   is_private: false,
 };
 
-type TextInputProps = {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-};
-
-const TextInput = ({ label, value, onChange, placeholder }: TextInputProps) => (
-  <div>
-    <label className="block text-sm font-medium text-gray-300">{label}</label>
-    <input
-      type="text"
-      value={value}
-      onChange={(e) => {
-        onChange(e.target.value);
-      }}
-      className="mt-1 block w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-sm text-gray-100 focus:border-blue-500 focus:outline-none"
-      placeholder={placeholder}
-    />
-  </div>
-);
-
 type DirectoryInputProps = {
   label: string;
   value: string;
   onSelect: () => void;
   placeholder: string;
 };
+
+const noop = () => undefined;
 
 const DirectoryInput = ({
   label,
@@ -58,20 +40,17 @@ const DirectoryInput = ({
   <div>
     <label className="block text-sm font-medium text-gray-300">{label}</label>
     <div className="mt-1 flex gap-2">
-      <input
-        type="text"
+      <TextInput
         value={value}
         readOnly
-        className="block flex-1 rounded border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-gray-400"
+        onChange={noop}
+        className="flex-1"
+        inputClassName="bg-gray-800 text-gray-400"
         placeholder={placeholder}
       />
-      <button
-        type="button"
-        onClick={onSelect}
-        className="rounded bg-gray-600 px-3 py-2 text-sm text-gray-100 hover:bg-gray-500"
-      >
+      <Button variant="secondary" className="bg-gray-600 text-gray-100 hover:bg-gray-500" onClick={onSelect}>
         選択
-      </button>
+      </Button>
     </div>
   </div>
 );
@@ -312,13 +291,9 @@ export const RepositoryForm = () => {
         <p className="text-sm text-red-500">{submitError}</p>
       )}
 
-      <button
-        type="submit"
-        disabled={!formValid || isSubmitting}
-        className="w-full rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
-      >
+      <Button type="submit" disabled={!formValid || isSubmitting} className="w-full">
         {isSubmitting ? "追加中..." : "リポジトリを追加"}
-      </button>
+      </Button>
     </form>
   );
 };
