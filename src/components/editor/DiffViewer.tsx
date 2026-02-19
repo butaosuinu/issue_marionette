@@ -7,6 +7,7 @@ import { ErrorBoundary } from "../error/ErrorBoundary";
 import { DIFF_VIEW_MODE, MONACO_DIFF_OPTIONS } from "../../constants/diff";
 import { getFileLanguage } from "../../utils/diffParser";
 import type { DiffViewMode } from "../../types/diff";
+import { Button } from "../ui/Button";
 
 type DiffStatsProps = {
   additions: number;
@@ -86,12 +87,9 @@ const DiffErrorFallback = ({ error, reset }: DiffErrorFallbackProps) => {
     <div className="flex h-full flex-col items-center justify-center gap-4 text-red-400">
       <span>{_({ id: "diff.error" })}</span>
       <span className="text-sm text-gray-500">{error.message}</span>
-      <button
-        onClick={reset}
-        className="rounded bg-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
-      >
+      <Button variant="secondary" onClick={reset}>
         再試行
-      </button>
+      </Button>
     </div>
   );
 };

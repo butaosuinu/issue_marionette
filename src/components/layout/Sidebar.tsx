@@ -4,6 +4,7 @@ import { RepositorySelector } from "../repository/RepositorySelector";
 import { runningSessionsAtom } from "../../stores/agentAtoms";
 import { worktreesAtom } from "../../stores/worktreeAtoms";
 import { AGENT_STATUS_LABELS } from "../../constants/agent";
+import { StatusDot } from "../ui/StatusDot";
 
 const SESSION_ID_DISPLAY_LENGTH = 8;
 
@@ -52,7 +53,7 @@ export const Sidebar = () => {
                     to="/"
                     className="flex items-center gap-2 rounded px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-gray-100 [&.active]:bg-gray-700 [&.active]:text-gray-100"
                   >
-                    <span className="h-2 w-2 rounded-full bg-green-500" />
+                    <StatusDot color="#22c55e" />
                     <span>{session.id.slice(0, SESSION_ID_DISPLAY_LENGTH)}</span>
                     <span className="ml-auto text-xs text-gray-500">
                       {AGENT_STATUS_LABELS[session.status]}
@@ -65,7 +66,7 @@ export const Sidebar = () => {
                     params={{ issueNumber: String(issueNumber) }}
                     className="flex items-center gap-2 rounded px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-gray-100 [&.active]:bg-gray-700 [&.active]:text-gray-100"
                   >
-                    <span className="h-2 w-2 rounded-full bg-green-500" />
+                    <StatusDot color="#22c55e" />
                     <span>#{issueNumber}</span>
                     <span className="ml-auto text-xs text-gray-500">
                       {AGENT_STATUS_LABELS[session.status]}

@@ -4,6 +4,7 @@ import { isAuthenticatedAtom } from "../../stores/authAtoms";
 import { LoginButton } from "../auth/LoginButton";
 import { UserMenu } from "../auth/UserMenu";
 import type { ThemeMode } from "../../types/settings";
+import { Button } from "../ui/Button";
 
 const AuthSection = () => {
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
@@ -45,14 +46,9 @@ export const Header = () => {
         </h1>
       </div>
       <div className="flex items-center gap-4">
-        <button
-          onClick={cycleTheme}
-          className="rounded p-2 text-gray-400 hover:bg-gray-700 hover:text-gray-100"
-          title={`Theme: ${theme}`}
-          type="button"
-        >
+        <Button variant="ghost" className="p-2" onClick={cycleTheme} title={`Theme: ${theme}`}>
           {themeIcon}
-        </button>
+        </Button>
         <AuthSection />
       </div>
     </header>

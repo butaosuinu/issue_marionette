@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from "react";
+import { Button } from "../ui/Button";
 
 type ErrorFallbackProps = {
   error: Error;
@@ -19,12 +20,9 @@ const DefaultErrorFallback = ({ error, reset }: ErrorFallbackProps) => (
   <div className="flex h-full flex-col items-center justify-center gap-4 text-red-400">
     <span className="text-lg">エラーが発生しました</span>
     <span className="text-sm text-gray-500">{error.message}</span>
-    <button
-      onClick={reset}
-      className="rounded bg-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
-    >
+    <Button variant="secondary" onClick={reset}>
       再試行
-    </button>
+    </Button>
   </div>
 );
 

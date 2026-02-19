@@ -4,6 +4,7 @@ import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 import { ErrorBoundary } from "../error/ErrorBoundary";
 import { resolvedThemeAtom } from "../../stores/settingsAtoms";
+import { Button } from "../ui/Button";
 
 type Props = {
   children: ReactNode;
@@ -28,12 +29,9 @@ const SidebarErrorFallback = ({
     <div className="flex flex-1 flex-col items-center justify-center gap-2 p-4">
       <span className="text-sm text-red-400">読み込みに失敗しました</span>
       <span className="text-xs text-gray-500">{error.message}</span>
-      <button
-        onClick={reset}
-        className="mt-2 rounded bg-gray-700 px-3 py-1 text-xs text-gray-300 hover:bg-gray-600"
-      >
+      <Button variant="secondary" size="sm" onClick={reset} className="mt-2">
         再試行
-      </button>
+      </Button>
     </div>
   </aside>
 );

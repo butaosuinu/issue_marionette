@@ -6,6 +6,8 @@ import {
   removeColumnAtom,
   updateColumnAtom,
 } from "../../stores/kanbanAtoms";
+import { Button } from "../ui/Button";
+import { TextInput } from "../ui/TextInput";
 
 type Props = {
   onClose: () => void;
@@ -44,13 +46,9 @@ export const ColumnSettings = ({ onClose }: Props) => {
           <h2 className="text-lg font-semibold text-gray-100">
             カラム設定
           </h2>
-          <button
-            onClick={onClose}
-            aria-label="閉じる"
-            className="rounded p-1 text-gray-400 hover:bg-gray-700 hover:text-gray-100"
-          >
+          <Button variant="ghost" className="p-1" onClick={onClose} aria-label="閉じる">
             ✕
-          </button>
+          </Button>
         </div>
 
         <div className="mt-4 max-h-80 space-y-3 overflow-y-auto">
@@ -70,24 +68,24 @@ export const ColumnSettings = ({ onClose }: Props) => {
                 }
                 className="h-8 w-8 cursor-pointer rounded border-0 bg-transparent"
               />
-              <input
-                type="text"
+              <TextInput
                 value={column.title}
-                onChange={(e) =>
+                onChange={(title) =>
                   { updateColumn({
                     columnId: column.id,
-                    updates: { title: e.target.value },
+                    updates: { title },
                   }); }
                 }
-                className="flex-1 rounded bg-gray-900 px-3 py-2 text-sm text-gray-100"
+                className="flex-1"
               />
               {!column.isDefault && (
-                <button
+                <Button
+                  variant="ghost"
+                  className="p-1 text-red-400 hover:text-red-300"
                   onClick={() => { removeColumn(column.id); }}
-                  className="rounded p-1 text-red-400 hover:bg-gray-700 hover:text-red-300"
                 >
                   削除
-                </button>
+                </Button>
               )}
               {column.isDefault && (
                 <span className="text-xs text-gray-500">デフォルト</span>
@@ -107,25 +105,20 @@ export const ColumnSettings = ({ onClose }: Props) => {
               onChange={(e) => { setNewColumnColor(e.target.value); }}
               className="h-10 w-10 cursor-pointer rounded border-0 bg-transparent"
             />
-            <input
-              type="text"
+            <TextInput
               value={newColumnTitle}
-              onChange={(e) => { setNewColumnTitle(e.target.value); }}
+              onChange={setNewColumnTitle}
               placeholder="カラム名を入力"
-              className="flex-1 rounded bg-gray-900 px-3 py-2 text-sm text-gray-100"
+              className="flex-1"
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   handleAddColumn();
                 }
               }}
             />
-            <button
-              onClick={handleAddColumn}
-              disabled={newColumnTitle.trim() === ""}
-              className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
+            <Button onClick={handleAddColumn} disabled={newColumnTitle.trim() === ""}>
               追加
-            </button>
+            </Button>
           </div>
         </div>
       </div>
