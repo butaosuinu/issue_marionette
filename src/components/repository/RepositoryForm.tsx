@@ -44,7 +44,8 @@ const DirectoryInput = ({
         value={value}
         readOnly
         onChange={noop}
-        className="flex-1 bg-gray-800 text-gray-400"
+        className="flex-1"
+        inputClassName="bg-gray-800 text-gray-400"
         placeholder={placeholder}
       />
       <Button variant="secondary" className="bg-gray-600 text-gray-100 hover:bg-gray-500" onClick={onSelect}>

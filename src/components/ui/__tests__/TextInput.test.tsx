@@ -56,10 +56,31 @@ describe("TextInput", () => {
     expect(handleKeyDown).toHaveBeenCalled();
   });
 
-  it("className で追加クラスが適用される", () => {
-    render(
+  it("className でラッパー div に追加クラスが適用される", () => {
+    const { container } = render(
       <TextInput value="" onChange={vi.fn()} className="flex-1" />,
     );
-    expect(screen.getByRole("textbox").className).toContain("flex-1");
+    expect(container.firstChild).toHaveClass("flex-1");
+  });
+
+  it("inputClassName で input に追加クラスが適用される", () => {
+    render(
+      <TextInput value="" onChange={vi.fn()} inputClassName="bg-gray-800" />,
+    );
+    expect(screen.getByRole("textbox")).toHaveClass("bg-gray-800");
+  });
+
+  it("className と inputClassName がそれぞれ正しい要素に適用される", () => {
+    const { container } = render(
+      <TextInput
+        value=""
+        onChange={vi.fn()}
+        className="flex-1"
+        inputClassName="bg-gray-800"
+      />,
+    );
+    expect(container.firstChild).toHaveClass("flex-1");
+    expect(screen.getByRole("textbox")).toHaveClass("bg-gray-800");
+    expect(screen.getByRole("textbox")).not.toHaveClass("flex-1");
   });
 });

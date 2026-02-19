@@ -9,6 +9,7 @@ type TextInputProps = {
   id?: string;
   readOnly?: boolean;
   className?: string;
+  inputClassName?: string;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
@@ -24,6 +25,7 @@ export const TextInput = ({
   id,
   readOnly = false,
   className,
+  inputClassName,
   onKeyDown,
 }: TextInputProps) => {
   const handleChange = useCallback(
@@ -34,7 +36,7 @@ export const TextInput = ({
   );
 
   return (
-    <div>
+    <div className={className}>
       {label !== undefined && (
         <label htmlFor={id} className={LABEL_STYLES}>
           {label}
@@ -47,7 +49,7 @@ export const TextInput = ({
         onChange={handleChange}
         placeholder={placeholder}
         readOnly={readOnly}
-        className={clsx(INPUT_STYLES, label !== undefined && "mt-1", className)}
+        className={clsx(INPUT_STYLES, label !== undefined && "mt-1", inputClassName)}
         onKeyDown={onKeyDown}
       />
     </div>
